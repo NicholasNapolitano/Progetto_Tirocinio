@@ -3,6 +3,7 @@
 #include "MapManager.h"
 #include "GameManager.h"
 #include "SoundManager.h"
+#include "CombatScene.h"
 
 USING_NS_CC;
 
@@ -13,7 +14,7 @@ EnemyBullet* EnemyBullet::create(const std::string& filename)
 	{
 		bullet->autorelease();
 		//default state
-		bullet->SetPreviousState(IDLE);
+		bullet->setPreviousState(IDLE);
 		bullet->deltaTime = 1.0f;
 		return bullet;
 	}
@@ -33,7 +34,7 @@ void EnemyBullet::hitPlayer() {
 	}
 }
 
-void EnemyBullet::SetState(State state)
+void EnemyBullet::setState(State state)
 {
 	this->previousState = _state;
 	_state = state;
@@ -55,56 +56,71 @@ const char* EnemyBullet::getStateName() const
 	return typeid(_state).name();
 }
 
-void EnemyBullet::input(State input)
-{
-	this->SetState(input);
-}
-
 
 void EnemyBullet::update(float dt)
 {
 	deltaTime += dt;
-	auto location = map->tileCoordForPosition(this->getPosition());
-	auto mappa = map->getMap();
+	auto location = scene->tileCoordForPosition(this->getPosition());
+	auto mappa = scene->getMap();
 	if (mappa[(int)location.x][(int)location.y] == WALL)
 	{
 		this->unscheduleUpdate();
 		this->getParent()->removeChild(this);
 		return;
 	}
-	hitPlayer();
+	if (player != NULL) {
+		hitPlayer();
+	}
 
 	if (deltaTime >= 1.0f) {
 		auto prevState = this->previousState;
 		if (previousState == MOVING) {
-			this->input(IDLE);
+			this->setState(IDLE);
 			deltaTime = 0;
 			return;
 		}
 		if (previousState == IDLE) {
-			this->input(MOVING);
+			this->setState(MOVING);
 			auto offset = Point(player->getPosition() - this->getPosition());
 			offset.normalize();
-			auto shootAmount = offset * 600;
-			auto realDest = shootAmount + this->getPosition();
+			if (this->weapon == GUN) {
+				auto shootAmount = offset * 60;
+
+				auto realDest = shootAmount + this->getPosition();
 
 
-			// Move projectile to actual endpoint
-			this->runAction(Sequence::create(
-				MoveTo::create(1.501f, realDest),
-				RemoveSelf::create(), nullptr));
+				// Move projectile to actual endpoint
+				this->runAction(Sequence::create(
+					MoveTo::create(1.501f, realDest),
+					RemoveSelf::create(), nullptr));
+			}
+			else if (this->weapon == RIFLE) {
+				auto shootAmount = offset * 130;
+
+				auto realDest = shootAmount + this->getPosition();
+
+
+				// Move projectile to actual endpoint
+				this->runAction(Sequence::create(
+					MoveTo::create(0.85f, realDest),
+					RemoveSelf::create(), nullptr));
+			}
 			deltaTime = 0;
 		}
 		deltaTime = 0;
 	}
 }
 
-void EnemyBullet::SetPreviousState(State state)
+void EnemyBullet::setPreviousState(State state)
 {
 	previousState = state;
 }
 
-void EnemyBullet::setManager(MapManager* map)
+void EnemyBullet::setCombatScene(CombatScene* scene)
 {
-	this->map = map;
+	this->scene = scene;
+}
+
+void EnemyBullet::setWeapon(Weapon weapon) {
+	this->weapon = weapon;
 }

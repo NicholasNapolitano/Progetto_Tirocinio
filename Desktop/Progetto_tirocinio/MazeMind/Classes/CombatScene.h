@@ -9,8 +9,8 @@
 
 USING_NS_CC;
 
-#define ARENA_WIDTH   5
-#define ARENA_HEIGHT  5
+#define ARENA_WIDTH   7
+#define ARENA_HEIGHT  7
 #define TILE_WIDTH   25
 #define TILE_HEIGHT  25
 #define ARENA_SIZE_WIDTH  ARENA_WIDTH*TILE_WIDTH
@@ -23,7 +23,9 @@ USING_NS_CC;
 #define WATER 3
 
 class GameManager;
+class MapManager;
 class HudLayer;
+
 
 class CombatScene : public cocos2d::Layer
 {
@@ -42,6 +44,7 @@ public:
 	void createMap();
 	int** getMap();
 	TMXTiledMap* getTileMap();
+	void setMapManager(MapManager* manager);
 
 
 private:
@@ -54,6 +57,7 @@ private:
 	HudLayer* hud;
 	Node* container;
 	GameManager* core;
+	MapManager* manager;
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(CombatScene);

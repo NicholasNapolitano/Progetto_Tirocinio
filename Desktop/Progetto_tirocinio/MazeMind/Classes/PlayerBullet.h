@@ -8,7 +8,7 @@
 USING_NS_CC;
 
 class Enemy;
-class MapManager;
+class CombatScene;
 class GameManager;
 
 
@@ -16,7 +16,7 @@ class PlayerBullet : public Bullet
 {
 public:
 	static PlayerBullet* create(const std::string& filename);
-	void setManager(MapManager* map);
+	void setCombatScene(CombatScene* scene);
 
 	void setTargetEnemy(Enemy* enemy);
 	void hitEnemy();
@@ -24,19 +24,20 @@ public:
 	const State getState() const;
 	const char* getStateName() const;
 	void update(float dt) override;
-	void input(State input);
-	void SetPreviousState(State state);
+	void setPreviousState(State state);
+	void setWeapon(Weapon Weapon);
 
 protected:
 
-	void SetState(State state);
+	void setState(State state);
 
 private:
 	State _state;
 	State previousState;
 	Enemy* enemy;
-	MapManager* map;
+	CombatScene* scene;
 	float deltaTime;
+	Weapon weapon;
 
 };
 
