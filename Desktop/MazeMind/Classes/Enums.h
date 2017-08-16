@@ -5,14 +5,24 @@ enum State {
 	IDLE = 0,
 	MOVING,
 	ATTACKING,
-	DEFENDING
+	DEFENDING,
+	STUNNING
+};
+
+enum EnemyType {
+	SENTRY,
+	KAMIKAZE,
+	TOWER,
+	SCOUT
 };
 
 enum Strategy {
 	NONE,
 	DEFEAT_ENEMY,
 	DISTANCE_ATTACK,
-	RETREAT
+	RETREAT,
+	BE_PATIENT,
+	STUN_ENEMY
 };
 
 enum Weapon {
@@ -20,8 +30,17 @@ enum Weapon {
 	GUN,
 	RIFLE,
 	SNIPER,
-	GRANADE,
-	KNIFE
+	GRENADE,
+	KNIFE,
+	RADIATION
+};
+
+enum Protection {
+	ANYTHING,
+	SHIELD,
+	ARMOR,
+	MASK,
+	ARMGUARD
 };
 
 enum Field {
@@ -33,9 +52,9 @@ enum Field {
 enum Moving {
 
 	MOVE_UP,
+	MOVE_RIGHT,
 	MOVE_DOWN,
-	MOVE_LEFT,
-	MOVE_RIGHT
+	MOVE_LEFT
 
 };
 

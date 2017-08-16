@@ -54,9 +54,11 @@ public:
 	void setCombatScene(CombatScene* arena);
 	void setActualScene(Field scene);
 	void setActualWeapon(Weapon weapon);
+	void setActualProtection(Protection weapon);
 	void setStrategy(Strategy strategy);
 	Strategy getStrategy();
 	Weapon getActualWeapon();
+	Protection getActualProtection();
 	Field getActualScene();
 
 	void setWait(int wait);
@@ -64,6 +66,17 @@ public:
 
 	TMXTiledMap* getTileMap();
 	int**  getMap();
+
+	void setDeltaTime(float time);
+	void setLife(float life);
+	float getLife();
+    
+	MapManager* getMapGame();
+	CombatScene* getMapFight();
+	Enemy* getTarget();
+
+	void setMatrix();
+
 
 protected:
 
@@ -77,14 +90,17 @@ private:
 	State previousState;
 	Enemy* target;
 	int**  mappa;
+	int** matrix;
 	std::list<Point> path;
 	PlayerBullet* projectile;
 	CombatScene* arena;
 	TMXTiledMap* tile;
 	float deltaTime;
-	int life;
+	float totalTime;
+	float life;
 	Field actualScene;
 	Weapon actualWeapon;
+	Protection actualProtection;
 	Strategy strategy;
 	static Player* player;
 	int wait;

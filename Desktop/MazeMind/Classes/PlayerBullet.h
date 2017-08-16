@@ -28,6 +28,10 @@ public:
 	void setWeapon(Weapon Weapon);
 	void explosion(Ref *pSender);
 	void setExplosionSprite(Ref *pSender);
+	void deleteExplosionSprite(Ref *pSender);
+	void deleteRadiationSprite(Ref *pSender);
+	void setRadiationSprite(Ref *pSender);
+	void stun(Ref *pSender);
 
 protected:
 
@@ -41,6 +45,7 @@ private:
 	float deltaTime;
 	Weapon weapon;
 	Sprite* explode;
+	Sprite* gas;
 
 };
 

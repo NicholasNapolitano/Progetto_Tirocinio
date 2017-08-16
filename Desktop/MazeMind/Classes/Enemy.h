@@ -41,10 +41,12 @@ public:
 
 	void setFirstDestination(Point destination);
 	void setSecondDestination(Point destination);
+	void setDestination(Point destination);
 	void setMappa(int** mappa);
 
 	Point getFirstDestination();
 	Point getSecondDestination();
+	Point getDestination();
 
 	void controlPosition(Point position);
 	void setMapGame(MapManager* mapGame);
@@ -56,12 +58,28 @@ public:
 	void setCombatScene(CombatScene* arena);
 	void setActualScene(Field scene);
 	void setActualWeapon(Weapon weapon);
+	void setActualProtection(Protection protection);
 	Weapon getActualWeapon();
+	Protection getActualProtection();
 	Player* getTarget();
 	MapManager* getMapGame();
+	CombatScene* getMapFight();
 
 	void setWait(int wait);
 	int getWait();
+	Field getActualScene();
+	int**  getMap();
+	TMXTiledMap* getTileMap();
+
+	void setType(EnemyType type);
+	EnemyType getType();
+
+	void setLife(float life);
+	float getLife();
+	float getTotalTime();
+	void setDeltaTime(float time);
+	void boom();
+	int decision = 4;
 
 protected:
 
@@ -78,13 +96,17 @@ private:
 	int**  mappa;
 	Player* target;
 	float deltaTime;
+	float totalTime;
 	EnemyBullet* projectile;
 	TMXTiledMap* tile;
 	CombatScene* arena;
 	float life;
 	Field actualScene;
 	Weapon actualWeapon;
+	Protection actualProtection;
+	EnemyType type;
 	int wait;
+	Sprite* booom;
 };
 
 #endif // __ENEMY_H__

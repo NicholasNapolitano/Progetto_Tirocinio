@@ -6,6 +6,8 @@
 #include "SoundManager.h"
 #include "EnemyBullet.h"
 #include "GameManager.h"
+#include "CombatScene.h"
+#include "StrategyManager.h"
 
 USING_NS_CC;
 
@@ -19,6 +21,7 @@ Enemy* Enemy::create(const std::string& filename)
 		enemy->setPreviousState(IDLE);
 		enemy->destination = enemy->getFirstDestination();
 		enemy->deltaTime = 0;
+		enemy->totalTime = 0;
 		enemy->wait = 0;
 		enemy->life = 2.0f;
 		enemy->actualScene = EXPLORATION;
@@ -41,6 +44,8 @@ void Enemy::setState(State state)
 	case MOVING:
 		break;
 	case ATTACKING:
+		break;
+	case STUNNING:
 		break;
 	}
 }
@@ -103,103 +108,59 @@ void Enemy::update(float dt)
 {
 	deltaTime += dt;
 	if (this->life <= 0) {
+		if (this->getType() == KAMIKAZE) {
+				this->boom();
+			}
 		this->getParent()->unscheduleAllCallbacks();
 		SoundManager::getInstance()->startWinSound();
-		GameManager::getInstance()->resumeExploration();
+		this->getMapFight()->finishBattle();
 		return;
 	}
-	if (deltaTime >= 0.5f) {
-			auto prevState = this->previousState;
-			if (previousState == MOVING || previousState == ATTACKING) {
-				this->setState(IDLE);
-				//this->controlPosition(this->getPosition());
+	auto tileCoord = arena->tileCoordForPosition(this->getPosition());
+	auto map = this->getMap();
+	if (this->getActualScene() == EXPLORATION) {
+		this->controlPosition(this->getPosition());
+	}
+	if (this->getActualScene() == FIGHT) {
+		if (map[(int)tileCoord.x][(int)tileCoord.y] == START) {
+			this->getParent()->unscheduleAllCallbacks();
+			SoundManager::getInstance()->startWinSound();
+			this->getMapFight()->finishBattle();
+			return;
+		}
+		if (this->getType() == KAMIKAZE) {
+			if (this->getBoundingBox().intersectsRect(this->getTarget()->getBoundingBox())) {
+				this->boom();
+				this->getParent()->unscheduleAllCallbacks();
+				SoundManager::getInstance()->startWinSound();
+				this->getMapFight()->finishBattle();
 				return;
 			}
-			if (previousState == IDLE) {
-				if(this->actualScene == EXPLORATION) {
-				auto diff = target->getPosition() - this->getPosition();
-				if (abs(diff.x) < 100 || abs(diff.x) < 100) {
-					this->setState(ATTACKING);
-					auto dest = target->getPosition();
-					auto location = this->getPosition();
-					auto distance = dest - location;
-					if (abs(distance.x) > abs(distance.y)) {
-						if (distance.x > 0) {
-							this->setMovingState(MOVE_RIGHT);
-						}
-						else {
-							this->setMovingState(MOVE_LEFT);
-						}
-					}
-					else {
-						if (distance.y > 0) {
-							this->setMovingState(MOVE_UP);
-						}
-						else {
-							this->setMovingState(MOVE_DOWN);
-						}
-					}
-					if (this->getBoundingBox().intersectsRect(target->getBoundingBox())) {
-						this->getMapGame()->beginBattle(this);
-						return;
-					}
-					deltaTime = 0;
-					return;
-				}
-				this->setState(MOVING);
-				auto location = this->getPosition();
-				auto distance = this->destination - location;
-				if (abs(distance.x) > abs(distance.y)) {
-					if (distance.x > 0) {
-						this->setMovingState(MOVE_RIGHT);
-					}
-					else {
-						this->setMovingState(MOVE_LEFT);
-					}
-				}
-				else {
-					if (distance.y > 0) {
-						this->setMovingState(MOVE_UP);
-					}
-					else {
-						this->setMovingState(MOVE_DOWN);
-					}
-				}
-				if (mapGame->tileCoordForPosition(location) == mapGame->tileCoordForPosition(this->getFirstDestination()))
-					this->destination = this->getSecondDestination();
-				else if (mapGame->tileCoordForPosition(location) == mapGame->tileCoordForPosition(this->getSecondDestination()))
-					this->destination = this->getFirstDestination();
-			deltaTime = 0;
 		}
-				else if (this->actualScene == FIGHT) {
-					auto diff = target->getPosition() - this->getPosition();
-					if (abs(diff.x) < 70 || abs(diff.x) < 70) {
-						//this->setState(ATTACKING);
-						//startAttacking();
-						deltaTime = 0;
-						return;
-					}
-					this->setState(MOVING);
-					auto dist = target->getPosition() - this->getPosition();
-					if (abs(dist.x) > abs(dist.y)) {
-						if (dist.x > 0) {
-							this->setMovingState(MOVE_RIGHT);
-						}
-						else {
-							this->setMovingState(MOVE_LEFT);
-						}
-					}
-					else {
-						if (dist.y > 0) {
-							this->setMovingState(MOVE_UP);
-						}
-						else {
-							this->setMovingState(MOVE_DOWN);
-						}
-					}
-					deltaTime = 0;
-					return;
-				}
+	}
+	if (deltaTime >= 0.5f) {
+		auto prevState = this->previousState;
+		if (previousState == MOVING || previousState == ATTACKING || previousState == DEFENDING || previousState == STUNNING) {
+			this->setState(IDLE);
+			return;
+		}
+		if (_state == STUNNING) {
+			this->runAction(DelayTime::create(0.5f));
+
+		}
+		if (previousState == IDLE) {
+			if (this->getType() == SENTRY) {
+				StrategyManager::getInstance()->sentryBehaviour(this);
+			}
+			else if (this->getType() == KAMIKAZE) {
+				StrategyManager::getInstance()->kamikazeBehaviour(this);
+			}
+			else if (this->getType() == TOWER) {
+				StrategyManager::getInstance()->towerBehaviour(this);
+			}
+			else if (this->getType() == SCOUT) {
+				StrategyManager::getInstance()->scoutBehaviour(this);
+			}
 		}
 	}
 }
@@ -339,11 +300,26 @@ void Enemy::controlPosition(Point position) {
 		tile->removeChild(this);
 		return;
 	}
-
+	if (mappa[(int)tileCoord.x][(int)tileCoord.y] == WALL) {
+		log("COLLISION!");
+		this->unscheduleUpdate();
+		return;
+	}
 	if (mappa[(int)tileCoord.x][(int)tileCoord.y] == WATER) {
 		this->unscheduleUpdate();
 		this->runAction(FadeOut::create(1.0f));
 		tile->removeChild(this);
+		return;
+	}
+	if (mappa[(int)tileCoord.x][(int)tileCoord.y] == STUN) {
+		log("OPS!");
+		this->setMovingState((Moving)RandomHelper::random_int(0, 3));
+		return;
+	}
+	if (mappa[(int)tileCoord.x][(int)tileCoord.y] == BURN) {
+		log("OUCH!");
+		SoundManager::getInstance()->startHurtScream();
+		this->setLife(this->getLife() - 0.5f);
 		return;
 	}
 }
@@ -376,6 +352,10 @@ void Enemy::startAttacking() {
 		SoundManager::getInstance()->startRifleSound();
 		projectile = EnemyBullet::create("RifleBullet.png");
 	}
+	else if (w == KNIFE) {
+		SoundManager::getInstance()->startKnifeSound();
+		projectile = EnemyBullet::create("Knife.png");
+	}
 	else if (w == SNIPER) {
 		if (this->getWait() == 0) {
 			SoundManager::getInstance()->startSniperSound();
@@ -384,13 +364,24 @@ void Enemy::startAttacking() {
 		}
 		this->setWait(this->getWait() - 1);
 	}
-	else if (w == GRANADE) {
+	else if (w == RADIATION) {
 		if (this->getWait() == 0) {
-			SoundManager::getInstance()->startGranadeOutSound();
-			projectile = EnemyBullet::create("Granade.png");
+			SoundManager::getInstance()->startGrenadeOutSound();
+			projectile = EnemyBullet::create("Radiation.png");
+			this->setWait(6);
+		}
+		else {
+			this->setWait(this->getWait() - 1);
+		}
+	}
+	else if (w == GRENADE) {
+		if (this->getWait() == 0) {
+			SoundManager::getInstance()->startGrenadeOutSound();
+			projectile = EnemyBullet::create("Grenade.png");
 			this->setWait(6);
 		}
 		this->setWait(this->getWait() - 1);
+
 	}
 	projectile->setPosition(this->getPosition());
 	projectile->setTargetPlayer(this->target);
@@ -410,20 +401,91 @@ void Enemy::setTileMap(TMXTiledMap* tile) {
 }
 
 void Enemy::hurt() {
-	if (target->getActualWeapon() == GUN) {
-		this->life -= 1.0f;
-	}
-	else if (target->getActualWeapon() == RIFLE) {
-		this->life -= 0.5f;
-	}
-	else if (target->getActualWeapon() == SNIPER) {
-		this->life -= 1.5f;
-	}
-	else if (target->getActualWeapon() == GRANADE) {
-		this->life -= 2.0f;
-	}
 
 	SoundManager::getInstance()->startHurtScream();
+
+	if (target->getActualWeapon() == GUN) {
+		if (this->getActualProtection() == SHIELD)
+		{
+			this->life -= 0.5f;
+			return;
+		}
+		else {
+			this->life -= 1.0f;
+			return;
+		}
+	}
+	else if (target->getActualWeapon() == RIFLE) {
+		if (this->getActualProtection() == SHIELD)
+		{
+			this->life -= 0.25f;
+			return;
+		}
+		else {
+			this->life -= 0.5f;
+			return;
+		}
+	}
+	else if (target->getActualWeapon() == SNIPER) {
+		if (this->getActualProtection() == SHIELD)
+		{
+			this->life -= 0.75f;
+			return;
+		}
+		else {
+			this->life -= 1.5f;
+			return;
+		}
+	}
+	else if (target->getActualWeapon() == KNIFE) {
+		if (this->getActualProtection() == ARMGUARD)
+		{
+			this->life -= 1.0f;
+			return;
+		}
+		else {
+			this->life -= 2.0f;
+			return;
+		}
+	}
+	else if (target->getActualWeapon() == RADIATION || this->getActualWeapon() == RADIATION) {
+		if (this->getActualProtection() == MASK)
+		{
+			return;
+		}
+		else {
+			this->setState(STUNNING);
+			return;
+		}
+	}
+	else if (target->getActualWeapon() == GRENADE || this->getActualWeapon() == GRENADE) {
+		if (this->getActualProtection() == ARMOR)
+		{
+			this->life -= 1.0f;
+			return;
+		}
+		else
+		{
+			this->life -= 2.0f;
+			return;
+		}
+	}
+}
+
+void Enemy::boom() {
+	SoundManager::getInstance()->startGrenadeSound();
+	booom = Sprite::create("KamikazeExplosion.png");
+	booom->setPosition(this->getPosition());
+	tile->addChild(booom, 5);
+	if (booom->getBoundingBox().intersectsRect(this->getTarget()->getBoundingBox())) {
+		if (this->getTarget()->getActualProtection() == ARMOR) {
+			this->getTarget()->setLife(this->getTarget()->getLife() - 1.0);
+		}
+		else {
+			this->getTarget()->setLife(this->getTarget()->getLife() - 2.0);
+		}
+	}
+	return;
 }
 
 void Enemy::setCombatScene(CombatScene* arena) {
@@ -456,4 +518,60 @@ void Enemy::setWait(int wait) {
 
 int Enemy::getWait() {
 	return this->wait;
+}
+
+CombatScene* Enemy::getMapFight() {
+	return this->arena;
+}
+
+Field Enemy::getActualScene() {
+	return this->actualScene;
+}
+
+int** Enemy::getMap() {
+	return this->mappa;
+}
+
+TMXTiledMap* Enemy::getTileMap() {
+	return this->tile;
+}
+
+void Enemy::setActualProtection(Protection protection) {
+	this->actualProtection = protection;
+}
+
+Protection Enemy::getActualProtection() {
+	return this->actualProtection;
+}
+
+void Enemy::setType(EnemyType type) {
+	this->type = type;
+}
+
+EnemyType Enemy::getType() {
+	return this->type;
+}
+
+Point Enemy::getDestination() {
+	return this->destination;
+}
+
+void Enemy::setDestination(Point destination) {
+	this->destination = destination;
+}
+
+void Enemy::setDeltaTime(float time) {
+	this->deltaTime = time;
+}
+
+void Enemy::setLife(float life) {
+	this->life = life;
+}
+
+float Enemy::getLife() {
+	return this->life;
+}
+
+float Enemy::getTotalTime() {
+	return this->totalTime;
 }

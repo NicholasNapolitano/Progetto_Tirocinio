@@ -16,7 +16,7 @@ public:
 	void selectStrategy();
 	void playGame(Player* player);
 	void startBattle(Enemy* enemy, Player* player);
-	void resumeExploration();
+	void resumeExploration(Player* player);
 	void pauseGame();
 	void resumeGame();
 	void winGame();

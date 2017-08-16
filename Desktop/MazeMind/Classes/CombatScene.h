@@ -21,7 +21,10 @@ USING_NS_CC;
 #define GROUND 1
 #define GRASS 2
 #define WATER 3
+#define START 303
 #define ESCAPE 404
+#define STUN 777
+#define BURN 999
 
 class GameManager;
 class MapManager;
@@ -47,7 +50,9 @@ public:
 	TMXTiledMap* getTileMap();
 	Player* getPlayer();
 	Enemy* getEnemy();
+	void setEnemy(EnemyType type);
 
+	void finishBattle();
 
 private:
 	Player* _player;

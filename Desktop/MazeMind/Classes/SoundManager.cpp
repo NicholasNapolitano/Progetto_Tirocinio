@@ -64,16 +64,28 @@ void SoundManager::startSniperSound()
 	audio->playEffect("Sniper.mp3");
 }
 
-void SoundManager::startGranadeSound()
+void SoundManager::startKnifeSound()
 {
 	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
-	audio->playEffect("Granade.mp3");
+	audio->playEffect("Knife.mp3");
 }
 
-void SoundManager::startGranadeOutSound()
+void SoundManager::startGrenadeSound()
 {
 	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
-	audio->playEffect("GranadeOut.mp3");
+	audio->playEffect("Grenade.mp3");
+}
+
+void SoundManager::startGasSound()
+{
+	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	audio->playEffect("Gas.mp3");
+}
+
+void SoundManager::startGrenadeOutSound()
+{
+	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	audio->playEffect("GrenadeOut.mp3");
 }
 
 void SoundManager::startWinSound()

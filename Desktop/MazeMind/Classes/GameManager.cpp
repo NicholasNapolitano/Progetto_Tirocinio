@@ -38,14 +38,16 @@ void GameManager::playGame(Player* player) {
 	MapManager* gameScene = (MapManager*)scene->getChildByName("MapManager");
 	gameScene->getPlayer()->setStrategy(player->getStrategy());
 	gameScene->getPlayer()->setActualWeapon(player->getActualWeapon());
+	gameScene->getPlayer()->setActualProtection(player->getActualProtection());
 	Director::getInstance()->pushScene(scene);
 	SoundManager::getInstance()->startGameMusic();
 }
 
-void GameManager::resumeExploration() {
+void GameManager::resumeExploration(Player* player) {
 	SoundManager::getInstance()->stopMusic();
 	SoundManager::getInstance()->startGameMusic();
 	Director::getInstance()->popScene();
+	player->getMapGame()->getPlayer()->setLife(player->getLife());
 	resumeGame();
 }
 
@@ -54,7 +56,11 @@ void GameManager::startBattle(Enemy* enemy, Player* player) {
 	CombatScene* gameScene = (CombatScene*)scene->getChildByName("CombatScene");
 	gameScene->getPlayer()->setStrategy(player->getStrategy());
 	gameScene->getPlayer()->setActualWeapon(player->getActualWeapon());
+	gameScene->getPlayer()->setActualProtection(player->getActualProtection());
+	gameScene->getPlayer()->setMapGame(player->getMapGame());
+	gameScene->setEnemy(enemy->getType());
 	gameScene->getEnemy()->setActualWeapon(enemy->getActualWeapon());
+	gameScene->getEnemy()->setActualProtection(enemy->getActualProtection());
 	Director::getInstance()->pushScene(scene);
 	SoundManager::getInstance()->startBattleMusic();
 }
@@ -68,6 +74,7 @@ void GameManager::pauseGame() {
 void GameManager::resumeGame() {
 	SoundManager::getInstance()->resumeEffects();
 	SoundManager::getInstance()->resumeMusic();
+	Director::getInstance()->resume();
 }
 
 void GameManager::winGame() {

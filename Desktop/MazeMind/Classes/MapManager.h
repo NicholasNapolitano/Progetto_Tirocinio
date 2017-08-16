@@ -43,7 +43,12 @@ public:
 	Point positionCoordForTile(cocos2d::Point position);
 
 	void beginBattle(Enemy* enemy);
-	void createMap();
+	void createMapI();
+	void createMapII();
+	void createMapIII();
+	void createMapIV();
+	void createMapV();
+	void createMapVI();
 	int** getMap();
 	TMXTiledMap* getTileMap();
 	void setStrategyMenu(StrategyMenu* strategy);

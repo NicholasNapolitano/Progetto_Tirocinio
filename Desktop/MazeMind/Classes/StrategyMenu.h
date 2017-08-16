@@ -2,6 +2,7 @@
 #define __STRATEGY_MENU_H__
 
 #include "cocos2d.h"
+#include "ui/CocosGUI.h"
 
 class GameManager;
 class MapManager;
@@ -18,11 +19,18 @@ public:
 	void gun(Ref *pSender);
 	void rifle(Ref *pSender);
 	void sniper(Ref *pSender);
-	void granade(Ref *pSender);
+	void grenade(Ref *pSender);
 	void knife(Ref *pSender);
+	void radiation(Ref *pSender);
 	void defeatEnemy(Ref *pSender);
 	void distanceAttack(Ref *pSender);
 	void retreat(Ref *pSender);
+	void bePatient(Ref *pSender);
+	void stunEnemy(Ref *pSender);
+	void shield(Ref *pSender);
+	void armor(Ref *pSender);
+	void mask(Ref *pSender);
+	void armguard(Ref *pSender);
 	Player* getPlayer();
 
 	// a selector callback
@@ -32,6 +40,11 @@ private:
 	GameManager* core;
 	Player* player;
 	MapManager* manager;
+	cocos2d::Sprite* strategySelected;
+	cocos2d::Sprite* weaponSelected;
+	cocos2d::Sprite* protectionSelected;
+	cocos2d::Size visibleSize;
+	cocos2d::ui::ScrollView* scrollView;
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(StrategyMenu);

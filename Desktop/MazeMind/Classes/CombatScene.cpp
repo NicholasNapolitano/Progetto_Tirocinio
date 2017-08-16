@@ -45,7 +45,7 @@ bool CombatScene::init()
 	Point center = Point(winSize.width + origin.x, winSize.height + origin.y);
 
 	tile = TMXTiledMap::create("Arena.tmx");
-	tile->setPosition(Vec2(25, 25));
+	tile->setPosition(Vec2(10, 10));
 	layer = tile->getLayer("Ground");
 	container->addChild(tile, 1, "Mappa");
 
@@ -60,6 +60,9 @@ bool CombatScene::init()
 				break;
 			case ESCAPE:
 				layer->setTileGID(213, Vec2(i, j));
+				break;
+			case START:
+				layer->setTileGID(491, Vec2(i, j));
 				break;
 			case WALL:
 				layer->setTileGID(448, Vec2(i, j));
@@ -86,20 +89,6 @@ bool CombatScene::init()
 	_player->setPosition(Point(10, 10));
 	tile->addChild(_player, 5, "Player");
 
-
-	_enemy = Enemy::create("Enemy.png");
-	_enemy->setCombatScene(this);
-	_enemy->setMappa(this->getMap());
-	_enemy->setTileMap(this->getTileMap());
-	_enemy->setActualScene(FIGHT);
-	_enemy->setState(IDLE);
-	_enemy->setPosition(Point(155, 155));
-	_enemy->setFirstDestination(Point(100, 10));
-	_enemy->setSecondDestination(Point(170, 170));
-	tile->addChild(_enemy, 5, "Enemy");
-	_enemy->setTarget(_player);
-	_player->setTarget(_enemy);
-
 	hud = new HudLayer();
 	this->addChild(hud, 15);
 
@@ -115,11 +104,9 @@ bool CombatScene::init()
 	log("WELCOME IN MY GAME. YOU HAVE TO REACH THE GOAL (THE STAIRS) TO WIN IT. GOOD LUCK!");
 
 	//_player->solve((int)_player->getPosition().x, (int)_player->getPosition().y);
-	tile->setScale(2.8f);
+	tile->setScale(3.3f);
 
 	this->scheduleUpdate();
-	_player->scheduleUpdate();
-	_enemy->scheduleUpdate();
 
 
 	return true;
@@ -163,8 +150,6 @@ bool CombatScene::onTouchBegan(Touch *touch, Event *event)
 
 void CombatScene::onTouchEnded(Touch *touch, Event *event)
 {
-	auto visibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	if (core->inPause()) {
 		core->resumeGame();
 		return;
@@ -198,7 +183,7 @@ void CombatScene::createMap() {
 	int random3 = RandomHelper::random_int(GROUND, WATER);
 
 	int map[ARENA_WIDTH][ARENA_HEIGHT] = {
-		{GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND },
+		{GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, START },
 		{GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND },
 		{GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND },
 		{GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND },
@@ -219,7 +204,7 @@ int** CombatScene::getMap() {
 }
 
 TMXTiledMap* CombatScene::getTileMap() {
-	return tile;
+	return this->tile;
 }
 
 Player* CombatScene::getPlayer() {
@@ -228,4 +213,75 @@ Player* CombatScene::getPlayer() {
 
 Enemy* CombatScene::getEnemy() {
 	return this->_enemy;
+}
+
+void CombatScene::finishBattle() {
+	GameManager::getInstance()->resumeExploration(_player);
+}
+
+void CombatScene::setEnemy(EnemyType type) {
+	switch (type) {
+	case SENTRY:
+		_enemy = Enemy::create("Sentry.png");
+		_enemy->setCombatScene(this);
+		_enemy->setMappa(this->getMap());
+		_enemy->setTileMap(this->getTileMap());
+		_enemy->setActualScene(FIGHT);
+		_enemy->setState(IDLE);
+		_enemy->setType(SENTRY);
+		_enemy->setPosition(Point(155, 155));
+		_enemy->setFirstDestination(Point(100, 10));
+		_enemy->setSecondDestination(Point(170, 170));
+		tile->addChild(_enemy, 5, "Sentry");
+		_enemy->setTarget(_player);
+		_player->setTarget(_enemy);
+		_player->scheduleUpdate();
+		_enemy->scheduleUpdate();
+		break;
+	case KAMIKAZE:
+		_enemy = Enemy::create("Kamikaze.png");
+		_enemy->setCombatScene(this);
+		_enemy->setMappa(this->getMap());
+		_enemy->setTileMap(this->getTileMap());
+		_enemy->setActualScene(FIGHT);
+		_enemy->setState(IDLE);
+		_enemy->setType(KAMIKAZE);
+		_enemy->setPosition(Point(155, 155));
+		tile->addChild(_enemy, 5, "Kamikaze");
+		_enemy->setTarget(_player);
+		_player->setTarget(_enemy);
+		_player->scheduleUpdate();
+		_enemy->scheduleUpdate();
+		break;
+	case TOWER:
+		_enemy = Enemy::create("Tower.png");
+		_enemy->setCombatScene(this);
+		_enemy->setMappa(this->getMap());
+		_enemy->setTileMap(this->getTileMap());
+		_enemy->setActualScene(FIGHT);
+		_enemy->setState(IDLE);
+		_enemy->setType(TOWER);
+		_enemy->setPosition(Point(155, 155));
+		tile->addChild(_enemy, 5, "Tower");
+		_enemy->setTarget(_player);
+		_player->setTarget(_enemy);
+		_player->scheduleUpdate();
+		_enemy->scheduleUpdate();
+		break;
+	case SCOUT:
+		_enemy = Enemy::create("Scout.png");
+		_enemy->setCombatScene(this);
+		_enemy->setMappa(this->getMap());
+		_enemy->setTileMap(this->getTileMap());
+		_enemy->setActualScene(FIGHT);
+		_enemy->setState(IDLE);
+		_enemy->setType(SCOUT);
+		_enemy->setPosition(Point(155, 155));
+		tile->addChild(_enemy, 5, "Tower");
+		_enemy->setTarget(_player);
+		_player->setTarget(_enemy);
+		_player->scheduleUpdate();
+		_enemy->scheduleUpdate();
+		break;
+	}
 }

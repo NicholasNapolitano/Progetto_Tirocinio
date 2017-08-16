@@ -53,9 +53,17 @@ bool StartMenu::init()
 	auto menu_item_3 = MenuItemFont::create("Settings", CC_CALLBACK_1(StartMenu::Settings, this));
 
 
-	menu_item_1->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 5) * 4));
-	menu_item_2->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 5) * 3));
-	menu_item_3->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 5) * 2));
+	menu_item_1->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 5) * 3.6));
+	menu_item_2->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 5) * 2.6));
+	menu_item_3->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 5) * 1.6));
+
+	auto label0 = Label::createWithTTF("MAZE MIND", "fonts/Marker Felt.ttf", 32);
+
+	// position the label on the center of the screen
+	label0->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 5) * 4.6));
+	label0->setTextColor(Color4B::RED);
+	// add the label as a child to this layer
+	this->addChild(label0, 1);
 
 	auto menu = Menu::create(menu_item_1, menu_item_2, menu_item_3, closeItem, NULL);
 	menu->setPosition(Point(0, 0));

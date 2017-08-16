@@ -26,7 +26,12 @@ public:
 	void update(float dt) override;
 	void setPreviousState(State state);
 	void setWeapon(Weapon weapon);
-	void explosion();
+	void explosion(Ref *pSender);
+	void setExplosionSprite(Ref *pSender);
+	void setRadiationSprite(Ref *pSender);
+	void deleteExplosionSprite(Ref *pSender);
+	void deleteRadiationSprite(Ref *pSender);
+	void stun(Ref *pSender);
 
 protected:
 
@@ -40,6 +45,8 @@ private:
 	int** mappa;
 	float deltaTime;
 	Weapon weapon;
+	Sprite* explode;
+	Sprite* gas;
 
 };
 

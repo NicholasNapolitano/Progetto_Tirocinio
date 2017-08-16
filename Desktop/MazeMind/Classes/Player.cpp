@@ -5,6 +5,7 @@
 #include "SoundManager.h"
 #include "PlayerBullet.h"
 #include "CombatScene.h"
+#include "StrategyManager.h"
 
 
 USING_NS_CC;
@@ -18,6 +19,7 @@ Player* Player::create(const std::string& filename)
 		//default state
 		player->setPreviousState(IDLE);
 		player->deltaTime = 0;
+		player->totalTime = 0;
 		player->wait = 0;
 		player->life = 3.0f;
 		player->actualScene = EMPTY;
@@ -38,6 +40,8 @@ void Player::setState(State state)
 	case MOVING:
 		break;
 	case ATTACKING:
+		break;
+	case STUNNING:
 		break;
 	}
 }
@@ -88,37 +92,36 @@ Point Player::getDestination()
 void Player::update(float dt)
 {
 	deltaTime += dt;
+	totalTime += dt;
+	
+
 	if (this->life <= 0) {
 		this->runAction(FadeOut::create(1.0f));
 		GameManager::getInstance()->loseGame();
 	}
+
 	auto tileCoord = arena->tileCoordForPosition(this->getPosition());
 	auto map = this->getMap();
+	if (this->getActualScene() == EXPLORATION) {
+		this->controlPosition(this->getPosition());
+	}
 	if (this->getActualScene() == FIGHT) {
 		if (map[(int)tileCoord.x][(int)tileCoord.y] == ESCAPE) {
 			this->getParent()->unscheduleAllCallbacks();
 			SoundManager::getInstance()->startWinSound();
-			GameManager::getInstance()->resumeExploration();
+			this->getMapFight()->finishBattle();
 			return;
 		}
 	}
 	if (deltaTime >= 0.5f) {
 		auto prevState = this->previousState;
-		if (previousState == MOVING || previousState == ATTACKING) {
+		if (previousState == MOVING || previousState == ATTACKING || previousState == DEFENDING || previousState == STUNNING) {
 			this->setState(IDLE);
-			//this->controlPosition(this->getPosition());
 			return;
 		}
 		if (previousState == IDLE) {
 			if (this->getActualScene() == EXPLORATION) {
 				this->setState(MOVING);
-				auto location = this->getPosition();
-				auto goal = this->getDestination();
-				if (location == goal) {
-					this->setState(IDLE);
-					GameManager::getInstance()->winGame();
-					return;
-				}
 				if (path.size() != 0) {
 					Point destination = this->path.front();
 					auto move = Sequence::create(MoveTo::create(0.5f, Vec2(destination.x, destination.y)), nullptr);
@@ -128,99 +131,30 @@ void Player::update(float dt)
 				deltaTime = 0;
 			}
 			else if (this->getActualScene() == FIGHT) {
+				if (totalTime >= 20.0f) {
+					this->setState(DEFENDING);
+				}
+				if (_state == STUNNING) {
+					this->runAction(DelayTime::create(0.5f));
+
+				}
+				if (_state == DEFENDING) {
+					StrategyManager::getInstance()->defensiveAsset(this);
+				}
 				if (this->getStrategy() == DEFEAT_ENEMY) {
-					if (this->target != NULL) {
-						auto diff = target->getPosition() - this->getPosition();
-						if (((abs(diff.x) <= 50 || abs(diff.y) <= 50) && (this->actualWeapon == GUN)) || ((abs(diff.x) <= 100 || abs(diff.y) <= 100) && (this->actualWeapon == RIFLE)) || ((abs(diff.x) <= 180 || abs(diff.y) <= 180) && (this->actualWeapon == SNIPER)) || ((abs(diff.x) <= 130 || abs(diff.y) <= 130) && (this->actualWeapon == GRANADE))) {
-							this->setState(ATTACKING);
-							startAttacking();
-							deltaTime = 0;
-							return;
-						}
-						this->setState(MOVING);
-						if (abs(diff.x) > abs(diff.y)) {
-							if (diff.x > 0) {
-								this->setMovingState(MOVE_RIGHT);
-							}
-							else {
-								this->setMovingState(MOVE_LEFT);
-							}
-						}
-						else {
-							if (diff.y > 0) {
-								this->setMovingState(MOVE_UP);
-							}
-							else {
-								this->setMovingState(MOVE_DOWN);
-							}
-						}
-						deltaTime = 0;
-						return;
-					}
+					StrategyManager::getInstance()->defeatEnemy(this);
 				}
 				else if (this->getStrategy() == DISTANCE_ATTACK) {
-					if (this->target != NULL) {
-						auto diff1 = target->getPosition() - this->getPosition();
-						if (((abs(diff1.x) >= 50 || abs(diff1.y) >= 50) && (this->actualWeapon == GUN)) || ((abs(diff1.x) >= 100 || abs(diff1.y) >= 100) && (this->actualWeapon == RIFLE)) || ((abs(diff1.x) >= 150 || abs(diff1.y) >= 150) && (this->actualWeapon == SNIPER)) || ((abs(diff1.x) >= 120 || abs(diff1.y) >= 120) && (this->actualWeapon == GRANADE))) {
-							this->setState(ATTACKING);
-							startAttacking();
-							deltaTime = 0;
-							return;
-						}
-						else {
-							this->setState(MOVING);
-							if (abs(diff1.x) < 100 && this->getPosition().x < 150) {
-								this->setMovingState(MOVE_RIGHT);
-								deltaTime = 0;
-								return;
-							}
-							else if (abs(diff1.x) < 100 && this->getPosition().x >= 150) {
-								if (this->getPosition().y < 150) {
-									this->setMovingState(MOVE_UP);
-									deltaTime = 0;
-									return;
-								}
-								else if (this->getPosition().y >= 150) {
-									this->setMovingState(MOVE_LEFT);
-									deltaTime = 0;
-									return;
-								}
-							}
-							else this->setMovingState(MOVE_DOWN);
-							deltaTime = 0;
-							return;
-						}
-					}
+					StrategyManager::getInstance()->distanceAttack(this);
 				}
 				else if (this->getStrategy() == RETREAT) {
-					auto meta = Point(159, 159);
-					if (this->target != NULL) {
-						auto diff2 = target->getPosition() - this->getPosition();
-						if (((abs(diff2.x) <= 30  || abs(diff2.y) <= 30) && (this->actualWeapon == KNIFE))) {
-							this->setState(ATTACKING);
-							startAttacking();
-							deltaTime = 0;
-							return;
-						}
-						else {
-							this->setState(MOVING);
-							auto road = meta - this->getPosition();
-							if (road.x >= 0) {
-								this->setMovingState(MOVE_RIGHT);
-							}
-							else if (road.y >= 0) {
-								this->setMovingState(MOVE_UP);
-							}
-						    else if (road.x < 0) {
-							    this->setMovingState(MOVE_LEFT);
-						    }
-							else if (road.y < 0) {
-								this->setMovingState(MOVE_DOWN);
-							}
-							deltaTime = 0;
-							return;
-						}
-					}
+					StrategyManager::getInstance()->retreat(this);
+				}
+				else if (this->getStrategy() == BE_PATIENT) {
+					StrategyManager::getInstance()->be_Patient(this);
+				}
+				else if (this->getStrategy() == STUN_ENEMY) {
+					StrategyManager::getInstance()->stun_Enemy(this);
 				}
 			}
 		}
@@ -347,7 +281,8 @@ bool Player::beCarefulRightDown(Point position) {
 }
 
 void Player::controlPosition(Point position) {
-	auto tileCoord = mapGame->tileCoordForPosition(position);
+	auto mappa = this->getMap();
+	auto tileCoord = this->getMapGame()->tileCoordForPosition(position);
 	GameManager* core = GameManager::getInstance();
 
 	if (mappa[(int)tileCoord.x][(int)tileCoord.y] == GOAL) {
@@ -375,6 +310,17 @@ void Player::controlPosition(Point position) {
 		log("YOU CAN'T SWIM!");
 		this->unscheduleUpdate();
 		core->loseGame();
+		return;
+	}
+	if (mappa[(int)tileCoord.x][(int)tileCoord.y] == STUN) {
+		log("OPS!");
+		this->setMovingState((Moving)RandomHelper::random_int(0, 3));
+		return;
+	}
+	if (mappa[(int)tileCoord.x][(int)tileCoord.y] == BURN) {
+		log("OUCH!");
+		SoundManager::getInstance()->startHurtScream();
+		this->setLife(this->getLife() - 0.5f);
 		return;
 	}
 
@@ -487,10 +433,10 @@ bool Player::solve(int x, int y)
 		return true;
 	}
 
-	if (mappa[X][Y] == WALL || mappa[X][Y] == STEP) return false;
+	if (matrix[X][Y] == WALL || matrix[X][Y] == STEP) return false;
 	// If you are on a wall or already were here
 
-	mappa[X][Y] = STEP;
+	matrix[X][Y] = STEP;
 	path.push_back(Point(x, y));
 
 	// Recursively search for our goal.
@@ -530,19 +476,73 @@ TMXTiledMap* Player::getTileMap(){
 }
 
 void Player::hurt() {
+	SoundManager::getInstance()->startHurtScream();
 	if (target->getActualWeapon() == GUN) {
-		this->life -= 1.0f;
+		if (this->getActualProtection() == SHIELD)
+		{
+			this->life -= 0.5f;
+			return;
+		}
+		else {
+			this->life -= 1.0f;
+			return;
+		}
 	}
 	else if (target->getActualWeapon() == RIFLE) {
-		this->life -= 0.5f;
+		if (this->getActualProtection() == SHIELD)
+		{
+			this->life -= 0.25f;
+			return;
+		}
+		else {
+			this->life -= 0.5f;
+			return;
+		}
 	}
 	else if (target->getActualWeapon() == SNIPER) {
-		this->life -= 1.5f;
+		if (this->getActualProtection() == SHIELD)
+		{
+			this->life -= 0.75f;
+			return;
+		}
+		else {
+			this->life -= 1.5f;
+			return;
+		}
 	}
-	else if (target->getActualWeapon() == GRANADE) {
-		this->life -= 2.0f;
+	else if (target->getActualWeapon() == KNIFE) {
+		if (this->getActualProtection() == ARMGUARD)
+		{
+			this->life -= 1.0f;
+			return;
+		}
+		else {
+			this->life -= 2.0f;
+			return;
+		}
 	}
-	SoundManager::getInstance()->startHurtScream();
+	else if (target->getActualWeapon() == RADIATION || this->getActualWeapon() == RADIATION) {
+		if (this->getActualProtection() == MASK)
+		{
+			return;
+		}
+		else {
+			this->setState(STUNNING);
+			return;
+		}
+	}
+	else if (target->getActualWeapon() == GRENADE || this->getActualWeapon() == GRENADE) {
+		if (this->getActualProtection() == ARMOR)
+		{
+			this->life -= 1.0f;
+			return;
+		}
+		else
+		{
+		    this->life -= 2.0f;
+		    return;
+	    }
+	}
 }
 
 void Player::startAttacking() {
@@ -562,6 +562,10 @@ void Player::startAttacking() {
 		SoundManager::getInstance()->startRifleSound();
 		projectile = PlayerBullet::create("RifleBullet.png");
 	}
+	else if (w == KNIFE) {
+		SoundManager::getInstance()->startKnifeSound();
+		projectile = PlayerBullet::create("Knife.png");
+	}
 	else if (w == SNIPER) {
 		if (this->getWait() == 0) {
 		      SoundManager::getInstance()->startSniperSound();
@@ -573,10 +577,21 @@ void Player::startAttacking() {
 			return;
 		}
 	}
-	else if (w == GRANADE) {
+	else if (w == GRENADE) {
 		if (this->getWait() == 0) {
-			SoundManager::getInstance()->startGranadeOutSound();
-			projectile = PlayerBullet::create("Granade.png");
+			SoundManager::getInstance()->startGrenadeOutSound();
+			projectile = PlayerBullet::create("Grenade.png");
+			this->setWait(6);
+		}
+		else {
+			this->setWait(this->getWait() - 1);
+			return;
+		}
+	}
+	else if (w == RADIATION) {
+		if (this->getWait() == 0) {
+			SoundManager::getInstance()->startGrenadeOutSound();
+			projectile = PlayerBullet::create("Radiation.png");
 			this->setWait(6);
 		}
 		else {
@@ -634,3 +649,48 @@ int** Player::getMap() {
 	return this->mappa;
 }
 
+void Player::setLife(float life) {
+	this->life = life;
+}
+
+float Player::getLife() {
+	return this->life;
+}
+
+MapManager* Player::getMapGame() {
+	return this->mapGame;
+}
+
+CombatScene* Player::getMapFight() {
+	return this->arena;
+}
+
+Enemy* Player::getTarget() {
+	return this->target;
+}
+
+void Player::setDeltaTime(float time) {
+	this->deltaTime = time;
+}
+
+void Player::setActualProtection(Protection protection) {
+	this->actualProtection = protection;
+}
+
+Protection Player::getActualProtection() {
+	return this->actualProtection;
+}
+
+void Player::setMatrix() {
+	auto map = this->getMap();
+
+	matrix = new int*[MAP_WIDTH];
+	for (int i = 0; i < MAP_WIDTH; ++i)
+		matrix[i] = new int[MAP_HEIGHT];
+
+	for (int i = 0; i < MAP_WIDTH; i++) {
+		for (int j = 0; j < MAP_HEIGHT; j++) {
+			matrix[i][j] = map[i][j];
+		}
+	}
+}

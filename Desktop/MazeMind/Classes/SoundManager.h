@@ -19,9 +19,11 @@ public:
 	void startVictorySound();
 	void startGunSound();
 	void startRifleSound();
+	void startKnifeSound();
 	void startSniperSound();
-	void startGranadeSound();
-	void startGranadeOutSound();
+	void startGrenadeSound();
+	void startGasSound();
+	void startGrenadeOutSound();
 	void startHurtScream();
 	void stopMusic();
 	void stopEffects();

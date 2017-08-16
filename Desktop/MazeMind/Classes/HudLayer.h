@@ -17,12 +17,12 @@ public:
 
 	~HudLayer(void);
 
-	void setManager(MapManager* manager);
 
 private:
 	cocos2d::ui::Button *button;
 	cocos2d::ui::Button *closeButton;
 	Label* pauseLabel;
+	Label* score;
 };
 
 #endif //__HUD_LAYER_H__
