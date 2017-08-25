@@ -2,6 +2,7 @@
 #define __ENUMS_H__
 
 enum State {
+
 	IDLE = 0,
 	MOVING,
 	ATTACKING,
@@ -10,6 +11,7 @@ enum State {
 };
 
 enum EnemyType {
+
 	SENTRY,
 	KAMIKAZE,
 	TOWER,
@@ -17,6 +19,7 @@ enum EnemyType {
 };
 
 enum Strategy {
+
 	NONE,
 	DEFEAT_ENEMY,
 	DISTANCE_ATTACK,
@@ -26,6 +29,7 @@ enum Strategy {
 };
 
 enum Weapon {
+
 	NO_ONE,
 	GUN,
 	RIFLE,
@@ -33,6 +37,12 @@ enum Weapon {
 	GRENADE,
 	KNIFE,
 	RADIATION
+};
+
+enum Crawling {
+
+	NORMAL,
+	GO_TO_GOAL
 };
 
 enum Protection {
@@ -44,9 +54,18 @@ enum Protection {
 };
 
 enum Field {
+
 	EMPTY,
 	EXPLORATION,
 	FIGHT
+};
+
+enum Thing {
+
+	ANY_ONE,
+	CURE,
+	POWER_UP,
+	DEFENSE_UP
 };
 
 enum Moving {
@@ -57,6 +76,5 @@ enum Moving {
 	MOVE_LEFT
 
 };
-
 
 #endif // __ENUMS_H__

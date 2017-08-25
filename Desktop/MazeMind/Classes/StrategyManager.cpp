@@ -19,6 +19,7 @@ StrategyManager* StrategyManager::getInstance()
 
 void StrategyManager::defensiveAsset(Player* player) {
 	if (player->getTarget() != NULL) {
+		player->lookingAround();
 		auto diff2 = player->getTarget()->getPosition() - player->getPosition();
 		if (((abs(diff2.x) <= 50 || abs(diff2.y) <= 50) && (player->getActualWeapon() == GUN))) {
 			player->setState(ATTACKING);
@@ -30,16 +31,16 @@ void StrategyManager::defensiveAsset(Player* player) {
 			player->setState(MOVING);
 			auto road = Point(159, 159) - player->getPosition();
 			if (road.x >= 0) {
-				player->setMovingState(MOVE_RIGHT);
+				player->controlRight();
 			}
 			else if (road.y >= 0) {
-				player->setMovingState(MOVE_UP);
+				player->controlUp();
 			}
 			else if (road.x < 0) {
-				player->setMovingState(MOVE_LEFT);
+				player->controlLeft();
 			}
 			else if (road.y < 0) {
-				player->setMovingState(MOVE_DOWN);
+				player->controlDown();
 			}
 			player->setDeltaTime(0);
 			return;
@@ -49,6 +50,7 @@ void StrategyManager::defensiveAsset(Player* player) {
 
 void StrategyManager::defeatEnemy(Player* player) {
 	if (player->getTarget() != NULL) {
+		player->lookingAround();
 		auto diff = player->getTarget()->getPosition() - player->getPosition();
 		if (((abs(diff.x) <= 60 || abs(diff.y) <= 60) && (player->getActualWeapon() == GUN)) || ((abs(diff.x) <= 120 || abs(diff.y) <= 120) && (player->getActualWeapon() == RIFLE)) || ((abs(diff.x) <= 200 || abs(diff.y) <= 200) && (player->getActualWeapon() == SNIPER)) || ((abs(diff.x) <= 130 || abs(diff.y) <= 130) && (player->getActualWeapon() == GRENADE)) || ((abs(diff.x) <= 20 || abs(diff.y) <= 20) && (player->getActualWeapon() == KNIFE)) || ((abs(diff.x) <= 130 || abs(diff.y) <= 130) && (player->getActualWeapon() == RADIATION))) {
 			player->setState(ATTACKING);
@@ -59,18 +61,18 @@ void StrategyManager::defeatEnemy(Player* player) {
 		player->setState(MOVING);
 		if (abs(diff.x) > abs(diff.y)) {
 			if (diff.x > 0) {
-				player->setMovingState(MOVE_RIGHT);
+				player->controlRight();
 			}
 			else {
-				player->setMovingState(MOVE_LEFT);
+				player->controlLeft();
 			}
 		}
 		else {
 			if (diff.y > 0) {
-				player->setMovingState(MOVE_UP);
+				player->controlUp();
 			}
 			else {
-				player->setMovingState(MOVE_DOWN);
+				player->controlDown();
 			}
 		}
 		player->setDeltaTime(0);
@@ -80,6 +82,7 @@ void StrategyManager::defeatEnemy(Player* player) {
 
 void StrategyManager::distanceAttack(Player* player) {
 	if (player->getTarget() != NULL) {
+		player->lookingAround();
 		auto diff1 = player->getTarget()->getPosition() - player->getPosition();
 		if (((abs(diff1.x) >= 50 || abs(diff1.y) >= 50) && (player->getActualWeapon() == GUN)) || ((abs(diff1.x) >= 100 || abs(diff1.y) >= 100) && (player->getActualWeapon() == RIFLE)) || ((abs(diff1.x) >= 150 || abs(diff1.y) >= 150) && (player->getActualWeapon() == SNIPER)) || ((abs(diff1.x) >= 120 || abs(diff1.y) >= 120) && (player->getActualWeapon() == GRENADE)) || ((abs(diff1.x) >= 25 || abs(diff1.y) >= 25) && (player->getActualWeapon() == KNIFE)) || ((abs(diff1.x) >= 120 || abs(diff1.y) >= 120) && (player->getActualWeapon() == RADIATION))) {
 			player->setState(ATTACKING);
@@ -90,23 +93,23 @@ void StrategyManager::distanceAttack(Player* player) {
 		else {
 			player->setState(MOVING);
 			if (abs(diff1.x) < 100 && player->getPosition().x < 150) {
-				player->setMovingState(MOVE_RIGHT);
+				player->controlRight();
 				player->setDeltaTime(0);
 				return;
 			}
 			else if (abs(diff1.x) < 100 && player->getPosition().x >= 150) {
 				if (player->getPosition().y < 150) {
-					player->setMovingState(MOVE_UP);
+					player->controlUp();
 					player->setDeltaTime(0);
 					return;
 				}
 				else if (player->getPosition().y >= 150) {
-					player->setMovingState(MOVE_LEFT);
+					player->controlLeft();
 					player->setDeltaTime(0);
 					return;
 				}
 			}
-			else player->setMovingState(MOVE_DOWN);
+			else player->controlDown();
 			player->setDeltaTime(0);
 			return;
 		}
@@ -116,6 +119,7 @@ void StrategyManager::distanceAttack(Player* player) {
 void StrategyManager::retreat(Player* player) {
 	auto meta = Point(159, 159);
 	if (player->getTarget() != NULL) {
+		player->lookingAround();
 		auto diff2 = player->getTarget()->getPosition() - player->getPosition();
 		if (((abs(diff2.x) <= 20 || abs(diff2.y) <= 20) && (player->getActualWeapon() == KNIFE))) {
 			player->setState(ATTACKING);
@@ -127,16 +131,16 @@ void StrategyManager::retreat(Player* player) {
 			player->setState(MOVING);
 			auto road = meta - player->getPosition();
 			if (road.x >= 0) {
-				player->setMovingState(MOVE_RIGHT);
+				player->controlRight();
 			}
 			else if (road.y >= 0) {
-				player->setMovingState(MOVE_UP);
+				player->controlUp();
 			}
 			else if (road.x < 0) {
-				player->setMovingState(MOVE_LEFT);
+				player->controlLeft();
 			}
 			else if (road.y < 0) {
-				player->setMovingState(MOVE_DOWN);
+				player->controlDown();
 			}
 			player->setDeltaTime(0);
 			return;
@@ -146,6 +150,7 @@ void StrategyManager::retreat(Player* player) {
 
 void StrategyManager::be_Patient(Player* player) {
 	if (player->getTarget() != NULL) {
+		player->lookingAround();
 		if (player->getTarget()->getState() == DEFENDING) {
 			this->defensiveAsset(player);
 		}
@@ -179,7 +184,13 @@ void StrategyManager::be_Patient(Player* player) {
 			}
 			else{*/
 			if (fakePos.x < 20 || fakePos.y < 20) {
-				player->setMovingState((Moving)RandomHelper::random_int(0, 1));
+				Moving move = (Moving)RandomHelper::random_int(0, 1);
+				if (move == MOVE_UP) {
+					player->controlUp();
+				}
+				if (move == MOVE_RIGHT) {
+					player->controlRight();
+				}
 			}
 			else {
 				//do Nothing
@@ -192,6 +203,7 @@ void StrategyManager::be_Patient(Player* player) {
 
 void StrategyManager::stun_Enemy(Player* player) {
 	if (player->getTarget() != NULL) {
+		player->lookingAround();
 		if (player->getTarget()->getState() == DEFENDING) {
 			this->defensiveAsset(player);
 		}
@@ -199,16 +211,16 @@ void StrategyManager::stun_Enemy(Player* player) {
 			player->setState(MOVING);
 			auto road1 = Point(159, 159) - player->getPosition();
 			if (road1.x >= 0) {
-				player->setMovingState(MOVE_RIGHT);
+				player->controlRight();
 			}
 			else if (road1.y >= 0) {
-				player->setMovingState(MOVE_UP);
+				player->controlUp();
 			}
 			else if (road1.x < 0) {
-				player->setMovingState(MOVE_LEFT);
+				player->controlLeft();
 			}
 			else if (road1.y < 0) {
-				player->setMovingState(MOVE_DOWN);
+				player->controlDown();
 			}
 			player->setDeltaTime(0);
 			return;
@@ -227,6 +239,7 @@ void StrategyManager::stun_Enemy(Player* player) {
 
 void StrategyManager::sentryBehaviour(Enemy* enemy) {
 	if (enemy->getActualScene() == EXPLORATION) {
+		enemy->lookingAround();
 		auto diff = enemy->getTarget()->getPosition() - enemy->getPosition();
 		if (abs(diff.x) < 100 || abs(diff.x) < 100) {
 			enemy->setState(ATTACKING);
@@ -235,18 +248,18 @@ void StrategyManager::sentryBehaviour(Enemy* enemy) {
 			auto distance = dest - location;
 			if (abs(distance.x) > abs(distance.y)) {
 				if (distance.x > 0) {
-					enemy->setMovingState(MOVE_RIGHT);
+					enemy->controlRight();
 				}
 				else {
-					enemy->setMovingState(MOVE_LEFT);
+					enemy->controlLeft();
 				}
 			}
 			else {
 				if (distance.y > 0) {
-					enemy->setMovingState(MOVE_UP);
+					enemy->controlUp();
 				}
 				else {
-					enemy->setMovingState(MOVE_DOWN);
+					enemy->controlDown();
 				}
 			}
 			if (enemy->getBoundingBox().intersectsRect(enemy->getTarget()->getBoundingBox())) {
@@ -261,18 +274,18 @@ void StrategyManager::sentryBehaviour(Enemy* enemy) {
 		auto distance = enemy->getDestination() - location;
 		if (abs(distance.x) > abs(distance.y)) {
 			if (distance.x > 0) {
-				enemy->setMovingState(MOVE_RIGHT);
+				enemy->controlRight();
 			}
 			else {
-				enemy->setMovingState(MOVE_LEFT);
+				enemy->controlLeft();
 			}
 		}
 		else {
 			if (distance.y > 0) {
-				enemy->setMovingState(MOVE_UP);
+				enemy->controlUp();
 			}
 			else {
-				enemy->setMovingState(MOVE_DOWN);
+				enemy->controlDown();
 			}
 		}
 		if (enemy->getMapGame()->tileCoordForPosition(location) == enemy->getMapGame()->tileCoordForPosition(enemy->getFirstDestination()))
@@ -282,6 +295,7 @@ void StrategyManager::sentryBehaviour(Enemy* enemy) {
 		enemy->setDeltaTime(0);
 	}
 	else if (enemy->getActualScene() == FIGHT) {
+		enemy->lookingAround();
 		if (enemy->getTotalTime() >= 20.0f || (enemy->getLife() <= 0.5f && enemy->getTarget()->getLife() > 2)) {
 			enemy->setState(DEFENDING);
 		}
@@ -304,18 +318,18 @@ void StrategyManager::sentryBehaviour(Enemy* enemy) {
 				auto road = meta - enemy->getPosition();
 				if (abs(road.x) > abs(road.y)) {
 					if (road.x > 0) {
-						enemy->setMovingState(MOVE_RIGHT);
+						enemy->controlRight();
 					}
 					else {
-						enemy->setMovingState(MOVE_LEFT);
+						enemy->controlLeft();
 					}
 				}
 				else {
 					if (road.y > 0) {
-						enemy->setMovingState(MOVE_UP);
+						enemy->controlUp();
 					}
 					else {
-						enemy->setMovingState(MOVE_DOWN);
+						enemy->controlDown();
 					}
 				}
 				enemy->setDeltaTime(0);
@@ -334,18 +348,18 @@ void StrategyManager::sentryBehaviour(Enemy* enemy) {
 		auto dist = enemy->getTarget()->getPosition() - enemy->getPosition();
 		if (abs(dist.x) > abs(dist.y)) {
 			if (dist.x > 0) {
-				enemy->setMovingState(MOVE_RIGHT);
+				enemy->controlRight();
 			}
 			else {
-				enemy->setMovingState(MOVE_LEFT);
+				enemy->controlLeft();
 			}
 		}
 		else {
 			if (dist.y > 0) {
-				enemy->setMovingState(MOVE_UP);
+				enemy->controlUp();
 			}
 			else {
-				enemy->setMovingState(MOVE_DOWN);
+				enemy->controlDown();
 			}
 		}
 		enemy->setDeltaTime(0);
@@ -356,6 +370,7 @@ void StrategyManager::sentryBehaviour(Enemy* enemy) {
 
 void StrategyManager::kamikazeBehaviour(Enemy* enemy) {
 	if (enemy->getActualScene() == EXPLORATION) {
+		enemy->lookingAround();
 		auto diff = enemy->getTarget()->getPosition() - enemy->getPosition();
 		if (abs(diff.x) < 150 || abs(diff.x) < 150) {
 			enemy->setState(ATTACKING);
@@ -364,18 +379,18 @@ void StrategyManager::kamikazeBehaviour(Enemy* enemy) {
 			auto distance = dest - location;
 			if (abs(distance.x) > abs(distance.y)) {
 				if (distance.x > 0) {
-					enemy->setMovingState(MOVE_RIGHT);
+					enemy->controlRight();
 				}
 				else {
-					enemy->setMovingState(MOVE_LEFT);
+					enemy->controlLeft();
 				}
 			}
 			else {
 				if (distance.y > 0) {
-					enemy->setMovingState(MOVE_UP);
+					enemy->controlUp();
 				}
 				else {
-					enemy->setMovingState(MOVE_DOWN);
+					enemy->controlDown();
 				}
 			}
 			if (enemy->getBoundingBox().intersectsRect(enemy->getTarget()->getBoundingBox())) {
@@ -387,29 +402,42 @@ void StrategyManager::kamikazeBehaviour(Enemy* enemy) {
 		}
 		enemy->setState(MOVING);
 		if (enemy->getWait() == 0) {
-			enemy->setMovingState((Moving) RandomHelper::random_int(0, 3));
+			Moving random = (Moving)RandomHelper::random_int(0, 3);
+			if (random == MOVE_UP) {
+				enemy->controlUp();
+			}
+			if (random == MOVE_RIGHT) {
+				enemy->controlRight();
+			}
+			if (random == MOVE_DOWN) {
+				enemy->controlDown();
+			}
+			if (random == MOVE_LEFT) {
+				enemy->controlLeft();
+			}
 			enemy->setWait(3);
 		}
 		enemy->setWait(enemy->getWait() - 1);
 		enemy->setDeltaTime(0);
 	}
 	else if (enemy->getActualScene() == FIGHT) {
+		enemy->lookingAround();
 		enemy->setState(MOVING);
 		auto dist1 = enemy->getTarget()->getPosition() - enemy->getPosition();
 		if (abs(dist1.x) > abs(dist1.y)) {
 			if (dist1.x > 0) {
-				enemy->setMovingState(MOVE_RIGHT);
+				enemy->controlRight();
 			}
 			else {
-				enemy->setMovingState(MOVE_LEFT);
+				enemy->controlLeft();
 			}
 		}
 		else {
 			if (dist1.y > 0) {
-				enemy->setMovingState(MOVE_UP);
+				enemy->controlUp();
 			}
 			else {
-				enemy->setMovingState(MOVE_DOWN);
+				enemy->controlDown();
 			}
 		}
 		enemy->setDeltaTime(0);
@@ -437,6 +465,7 @@ void StrategyManager::towerBehaviour(Enemy* enemy) {
 
 void StrategyManager::scoutBehaviour(Enemy* enemy) {
 	if (enemy->getActualScene() == EXPLORATION) {
+		enemy->lookingAround();
 		auto diff = enemy->getTarget()->getPosition() - enemy->getPosition();
 		if (abs(diff.x) < 50 || abs(diff.x) < 50) {
 			enemy->setState(ATTACKING);
@@ -445,18 +474,18 @@ void StrategyManager::scoutBehaviour(Enemy* enemy) {
 			auto distance = dest - location;
 			if (abs(distance.x) > abs(distance.y)) {
 				if (distance.x > 0) {
-					enemy->setMovingState(MOVE_RIGHT);
+					enemy->controlRight();
 				}
 				else {
-					enemy->setMovingState(MOVE_LEFT);
+					enemy->controlLeft();
 				}
 			}
 			else {
 				if (distance.y > 0) {
-					enemy->setMovingState(MOVE_UP);
+					enemy->controlUp();
 				}
 				else {
-					enemy->setMovingState(MOVE_DOWN);
+					enemy->controlDown();
 				}
 			}
 			if (enemy->getBoundingBox().intersectsRect(enemy->getTarget()->getBoundingBox())) {
@@ -467,31 +496,32 @@ void StrategyManager::scoutBehaviour(Enemy* enemy) {
 			return;
 		}
 		enemy->setState(MOVING);
-		auto location = enemy->getPosition();
-		auto distance = enemy->getDestination() - location;
+		auto location1 = enemy->getPosition();
+		auto distance = enemy->getDestination() - location1;
 		if (abs(distance.x) > abs(distance.y)) {
 			if (distance.x > 0) {
-				enemy->setMovingState(MOVE_RIGHT);
+				enemy->controlRight();
 			}
 			else {
-				enemy->setMovingState(MOVE_LEFT);
+				enemy->controlLeft();
 			}
 		}
 		else {
 			if (distance.y > 0) {
-				enemy->setMovingState(MOVE_UP);
+				enemy->controlUp();
 			}
 			else {
-				enemy->setMovingState(MOVE_DOWN);
+				enemy->controlDown();
 			}
 		}
-		if (enemy->getMapGame()->tileCoordForPosition(location) == enemy->getMapGame()->tileCoordForPosition(enemy->getFirstDestination()))
+		if (enemy->getMapGame()->tileCoordForPosition(location1) == enemy->getMapGame()->tileCoordForPosition(enemy->getFirstDestination()))
 			enemy->setDestination(enemy->getSecondDestination());
-		else if (enemy->getMapGame()->tileCoordForPosition(location) == enemy->getMapGame()->tileCoordForPosition(enemy->getSecondDestination()))
+		else if (enemy->getMapGame()->tileCoordForPosition(location1) == enemy->getMapGame()->tileCoordForPosition(enemy->getSecondDestination()))
 			enemy->setDestination(enemy->getFirstDestination());
 		enemy->setDeltaTime(0);
 	}
 	else if (enemy->getActualScene() == FIGHT) {
+		enemy->lookingAround();
 		if (enemy->getTotalTime() >= 10.0f || (enemy->getLife() <= 1.0f && enemy->getTarget()->getLife() >= 2)) {
 			enemy->setState(DEFENDING);
 		}
@@ -510,18 +540,18 @@ void StrategyManager::scoutBehaviour(Enemy* enemy) {
 				auto road2 = meta - enemy->getPosition();
 				if (abs(road2.x) > abs(road2.y)) {
 					if (road2.x > 0) {
-						enemy->setMovingState(MOVE_RIGHT);
+						enemy->controlRight();
 					}
 					else {
-						enemy->setMovingState(MOVE_LEFT);
+						enemy->controlLeft();
 					}
 				}
 				else {
 					if (road2.y > 0) {
-						enemy->setMovingState(MOVE_UP);
+						enemy->controlUp();
 					}
 					else {
-						enemy->setMovingState(MOVE_DOWN);
+						enemy->controlDown();
 					}
 				}
 				enemy->setDeltaTime(0);
@@ -539,23 +569,29 @@ void StrategyManager::scoutBehaviour(Enemy* enemy) {
 		enemy->setState(MOVING);
 		auto dist = enemy->getTarget()->getPosition() - enemy->getPosition();
 		if (enemy->decision == 3) {
-			enemy->setMovingState(MOVE_DOWN);
+			enemy->controlDown();
 			enemy->decision--;
+			enemy->setDeltaTime(0);
+			return;
 		}
 		if (enemy->decision == 2) {
-			enemy->setMovingState(MOVE_LEFT);
+			enemy->controlLeft();
 			enemy->decision--;
+			enemy->setDeltaTime(0);
+			return;
 		}
 		if (enemy->decision == 1) {
-			enemy->setMovingState(MOVE_UP);
+			enemy->controlUp();
 			enemy->decision--;
+			enemy->setDeltaTime(0);
+			return;
 		}
 		if (enemy->decision == 0) {
-			enemy->setMovingState(MOVE_RIGHT);
+			enemy->controlRight();
 			enemy->decision = 3;
+			enemy->setDeltaTime(0);
+			return;
 		}
-		enemy->setDeltaTime(0);
-		return;
 	}
 
 }

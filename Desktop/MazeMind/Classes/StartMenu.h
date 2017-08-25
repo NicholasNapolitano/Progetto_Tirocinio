@@ -14,12 +14,14 @@ public:
 	void Play(Ref *pSender);
 	void Highscores(Ref *pSender);
 	void Settings(Ref *pSender);
+	void update(float dt) override;
 
 	// a selector callback
 	void menuCloseCallback(cocos2d::Ref* pSender);
 
 private:
 	GameManager* core;
+	float timer;
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(StartMenu);

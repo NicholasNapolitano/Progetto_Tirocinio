@@ -91,6 +91,7 @@ bool CombatScene::init()
 
 	hud = new HudLayer();
 	this->addChild(hud, 15);
+	hud->setScore(100);
 
 	// Register Touch Event
 	auto dispatcher = Director::getInstance()->getEventDispatcher();
@@ -120,8 +121,14 @@ void CombatScene::update(float dt)
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	deltaTime += dt;
 
+	if (this->getHud()->getScore() == 0) {
+		core->loseGame();
+	}
+
 
 	if (deltaTime >= 0.5f) {
+
+		hud->setScore(hud->getScore() - 1);
 
 		Point position = _player->getPosition();
 
@@ -219,6 +226,15 @@ void CombatScene::finishBattle() {
 	GameManager::getInstance()->resumeExploration(_player);
 }
 
+void CombatScene::setHud(HudLayer* hud) {
+	this->hud = hud;
+}
+
+HudLayer* CombatScene::getHud() {
+	return this->hud;
+}
+
+
 void CombatScene::setEnemy(EnemyType type) {
 	switch (type) {
 	case SENTRY:
@@ -246,6 +262,7 @@ void CombatScene::setEnemy(EnemyType type) {
 		_enemy->setActualScene(FIGHT);
 		_enemy->setState(IDLE);
 		_enemy->setType(KAMIKAZE);
+		_enemy->setLife(3.0f);
 		_enemy->setPosition(Point(155, 155));
 		tile->addChild(_enemy, 5, "Kamikaze");
 		_enemy->setTarget(_player);
@@ -261,6 +278,7 @@ void CombatScene::setEnemy(EnemyType type) {
 		_enemy->setActualScene(FIGHT);
 		_enemy->setState(IDLE);
 		_enemy->setType(TOWER);
+		_enemy->setLife(4.0f);
 		_enemy->setPosition(Point(155, 155));
 		tile->addChild(_enemy, 5, "Tower");
 		_enemy->setTarget(_player);
@@ -277,7 +295,7 @@ void CombatScene::setEnemy(EnemyType type) {
 		_enemy->setState(IDLE);
 		_enemy->setType(SCOUT);
 		_enemy->setPosition(Point(155, 155));
-		tile->addChild(_enemy, 5, "Tower");
+		tile->addChild(_enemy, 5, "Scout");
 		_enemy->setTarget(_player);
 		_player->setTarget(_enemy);
 		_player->scheduleUpdate();

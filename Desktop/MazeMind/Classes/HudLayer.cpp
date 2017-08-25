@@ -61,8 +61,34 @@ HudLayer::HudLayer(){
 	score->setTextColor(Color4B::BLUE);
 	// add the label as a child to this layer
 	this->addChild(score, 1);
+
+	this->scorePoints = 0;
+
+	__String *tempScore = __String::createWithFormat("%d", scorePoints);
+	points = Label::createWithTTF(tempScore->getCString(), "fonts/Marker Felt.ttf", 32);
+	points->setPosition(Point(origin.x + 100, origin.y + visibleSize.height));
+	points->setAnchorPoint(Point(0, 1));
+	points->setTextColor(Color4B::BLUE);
+	this->addChild(points, 1);
+
+	this->scheduleUpdate();
 }
 
 HudLayer::~HudLayer() {
 
+}
+
+
+void HudLayer::setScore(int scorePoints) {
+	this->scorePoints = scorePoints;
+}
+
+int HudLayer::getScore() {
+	return this->scorePoints;
+}
+
+void HudLayer::update(float dt) {
+
+	__String *tempScore = __String::createWithFormat("%d", scorePoints);
+	points->setString(tempScore->getCString());
 }

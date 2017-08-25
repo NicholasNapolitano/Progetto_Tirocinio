@@ -29,6 +29,21 @@ public:
 	void stopEffects();
 	void resumeMusic();
 	void resumeEffects();
+	void startGunChosenSound();
+	void startRifleChosenSound();
+	void startSniperChosenSound();
+	void startGrenadeChosenSound();
+	void startKnifeChosenSound();
+	void startRadiationChosenSound();
+	void startDefeatEnemyChosenSound();
+	void startDistanceAttackChosenSound();
+	void startRetreatChosenSound();
+	void startBePatientChosenSound();
+	void startStunEnemyChosenSound();
+	void startShieldChosenSound();
+	void startArmorChosenSound();
+	void startMaskChosenSound();
+	void startArmguardChosenSound();
 
 protected:
 	

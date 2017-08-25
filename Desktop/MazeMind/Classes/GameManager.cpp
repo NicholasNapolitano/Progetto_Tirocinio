@@ -6,6 +6,7 @@
 #include "StartMenu.h"
 #include "StrategyMenu.h"
 #include "GameOverScene.h"
+#include "HudLayer.h"
 #include <typeinfo>
 
 USING_NS_CC;
@@ -46,6 +47,7 @@ void GameManager::playGame(Player* player) {
 void GameManager::resumeExploration(Player* player) {
 	SoundManager::getInstance()->stopMusic();
 	SoundManager::getInstance()->startGameMusic();
+	player->getMapGame()->getHud()->setScore(player->getMapFight()->getHud()->getScore());
 	Director::getInstance()->popScene();
 	player->getMapGame()->getPlayer()->setLife(player->getLife());
 	resumeGame();
@@ -54,6 +56,8 @@ void GameManager::resumeExploration(Player* player) {
 void GameManager::startBattle(Enemy* enemy, Player* player) {
 	Scene* scene = CombatScene::createScene();
 	CombatScene* gameScene = (CombatScene*)scene->getChildByName("CombatScene");
+	gameScene->getPlayer()->setMapGame(player->getMapGame());
+	gameScene->getHud()->setScore(player->getMapGame()->getHud()->getScore());
 	gameScene->getPlayer()->setStrategy(player->getStrategy());
 	gameScene->getPlayer()->setActualWeapon(player->getActualWeapon());
 	gameScene->getPlayer()->setActualProtection(player->getActualProtection());

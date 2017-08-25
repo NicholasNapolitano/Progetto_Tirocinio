@@ -8,6 +8,7 @@
 #include "GameManager.h"
 #include "CombatScene.h"
 #include "StrategyManager.h"
+#include "HudLayer.h"
 
 USING_NS_CC;
 
@@ -19,7 +20,6 @@ Enemy* Enemy::create(const std::string& filename)
 		enemy->autorelease();
 		//default state
 		enemy->setPreviousState(IDLE);
-		enemy->destination = enemy->getFirstDestination();
 		enemy->deltaTime = 0;
 		enemy->totalTime = 0;
 		enemy->wait = 0;
@@ -113,6 +113,7 @@ void Enemy::update(float dt)
 			}
 		this->getParent()->unscheduleAllCallbacks();
 		SoundManager::getInstance()->startWinSound();
+		this->getMapFight()->getHud()->setScore(this->getMapFight()->getHud()->getScore() + 100);
 		this->getMapFight()->finishBattle();
 		return;
 	}
@@ -206,42 +207,76 @@ void Enemy::startGoingRight() {
 
 
 bool Enemy::beCarefulLeft(Point position) {
-	auto tileCoordLeft = mapGame->tileCoordForPosition(Point(position.x - TILE_WIDTH, position.y));
+	if (this->getActualScene() == EXPLORATION) {
+		auto tileCoordLeft = mapGame->tileCoordForPosition(Point(position.x - TILE_WIDTH, position.y));
+		if (tileCoordLeft.x == 0 || mappa[(int)tileCoordLeft.x][(int)tileCoordLeft.y] == NONE || mappa[(int)tileCoordLeft.x][(int)tileCoordLeft.y] == WALL || mappa[(int)tileCoordLeft.x][(int)tileCoordLeft.y] == WATER) {
+			return false;
+		}
+	}
 
-
-	if (mappa[(int)tileCoordLeft.x][(int)tileCoordLeft.y] == NONE || mappa[(int)tileCoordLeft.x][(int)tileCoordLeft.y] == WALL || mappa[(int)tileCoordLeft.x][(int)tileCoordLeft.y] == WATER) {
-		return false;
+	else if (this->getActualScene() == FIGHT) {
+		auto tileCoordLeftBattle = arena->tileCoordForPosition(Point(position.x - TILE_WIDTH, position.y));
+		if (tileCoordLeftBattle.x == 0 || mappa[(int)tileCoordLeftBattle.x][(int)tileCoordLeftBattle.y] == NONE || mappa[(int)tileCoordLeftBattle.x][(int)tileCoordLeftBattle.y] == WALL || mappa[(int)tileCoordLeftBattle.x][(int)tileCoordLeftBattle.y] == WATER) {
+			return false;
+		}
 	}
 
 	return true;
 }
 
 bool Enemy::beCarefulRight(Point position) {
-	auto tileCoordRight = mapGame->tileCoordForPosition(Point(position.x + TILE_WIDTH, position.y));
+	if (this->getActualScene() == EXPLORATION) {
+		auto tileCoordRight = mapGame->tileCoordForPosition(Point(position.x + TILE_WIDTH, position.y));
+		if (tileCoordRight.x == 40 || mappa[(int)tileCoordRight.x][(int)tileCoordRight.y] == NONE || mappa[(int)tileCoordRight.x][(int)tileCoordRight.y] == WALL || mappa[(int)tileCoordRight.x][(int)tileCoordRight.y] == WATER) {
+			return false;
+		}
+	}
 
-	if (mappa[(int)tileCoordRight.x][(int)tileCoordRight.y] == NONE || mappa[(int)tileCoordRight.x][(int)tileCoordRight.y] == WALL || mappa[(int)tileCoordRight.x][(int)tileCoordRight.y] == WATER) {
-		return false;
+	else if (this->getActualScene() == FIGHT) {
+		auto tileCoordRightBattle = arena->tileCoordForPosition(Point(position.x + TILE_WIDTH, position.y));
+		if (tileCoordRightBattle.x == 7 || mappa[(int)tileCoordRightBattle.x][(int)tileCoordRightBattle.y] == NONE || mappa[(int)tileCoordRightBattle.x][(int)tileCoordRightBattle.y] == WALL || mappa[(int)tileCoordRightBattle.x][(int)tileCoordRightBattle.y] == WATER) {
+			return false;
+		}
 	}
 
 	return true;
 }
 
 bool Enemy::beCarefulUp(Point position) {
-	auto tileCoordUp = mapGame->tileCoordForPosition(Point(position.x, position.y + TILE_HEIGHT));
 	//auto mappa = mapGame->getMap();
 
-	if (mappa[(int)tileCoordUp.x][(int)tileCoordUp.y] == NONE || mappa[(int)tileCoordUp.x][(int)tileCoordUp.y] == WALL || mappa[(int)tileCoordUp.x][(int)tileCoordUp.y] == WATER) {
-		return false;
+	if (this->getActualScene() == EXPLORATION) {
+		auto tileCoordUp = mapGame->tileCoordForPosition(Point(position.x, position.y + TILE_HEIGHT));
+		if (tileCoordUp.y == 40 || mappa[(int)tileCoordUp.x][(int)tileCoordUp.y] == NONE || mappa[(int)tileCoordUp.x][(int)tileCoordUp.y] == WALL || mappa[(int)tileCoordUp.x][(int)tileCoordUp.y] == WATER) {
+			return false;
+		}
+	}
+
+	else if (this->getActualScene() == FIGHT) {
+		auto tileCoordUpBattle = arena->tileCoordForPosition(Point(position.x, position.y + TILE_HEIGHT));
+		if (tileCoordUpBattle.y == 7 || mappa[(int)tileCoordUpBattle.x][(int)tileCoordUpBattle.y] == NONE || mappa[(int)tileCoordUpBattle.x][(int)tileCoordUpBattle.y] == WALL || mappa[(int)tileCoordUpBattle.x][(int)tileCoordUpBattle.y] == WATER) {
+			return false;
+		}
 	}
 
 	return true;
 }
 
 bool Enemy::beCarefulDown(Point position) {
-	auto tileCoordDown = mapGame->tileCoordForPosition(Point(position.x, position.y - TILE_HEIGHT));
+	//auto mappa = mapGame->getMap();
 
-	if (mappa[(int)tileCoordDown.x][(int)tileCoordDown.y] == NONE || mappa[(int)tileCoordDown.x][(int)tileCoordDown.y] == WALL || mappa[(int)tileCoordDown.x][(int)tileCoordDown.y] == WATER) {
-		return false;
+	if (this->getActualScene() == EXPLORATION) {
+		auto tileCoordDown = mapGame->tileCoordForPosition(Point(position.x, position.y - TILE_HEIGHT));
+		if (tileCoordDown.y == 0 || mappa[(int)tileCoordDown.x][(int)tileCoordDown.y] == NONE || mappa[(int)tileCoordDown.x][(int)tileCoordDown.y] == WALL || mappa[(int)tileCoordDown.x][(int)tileCoordDown.y] == WATER) {
+			return false;
+		}
+	}
+
+	else if (this->getActualScene() == FIGHT) {
+		auto tileCoordDownBattle = arena->tileCoordForPosition(Point(position.x, position.y - TILE_HEIGHT));
+		if (tileCoordDownBattle.y == 0 || mappa[(int)tileCoordDownBattle.x][(int)tileCoordDownBattle.y] == NONE || mappa[(int)tileCoordDownBattle.x][(int)tileCoordDownBattle.y] == WALL || mappa[(int)tileCoordDownBattle.x][(int)tileCoordDownBattle.y] == WATER) {
+			return false;
+		}
 	}
 
 	return true;
@@ -324,6 +359,101 @@ void Enemy::controlPosition(Point position) {
 	}
 }
 
+void Enemy::lookingAround() {
+	auto pos = this->getPosition();
+
+	if (beCarefulUp(pos)) {
+		neighbours[0] = Point(pos.x, pos.y + TILE_HEIGHT);
+	}
+	else {
+		neighbours[0] = Point(0, 0);
+	}
+
+	if (beCarefulRight(pos)) {
+		neighbours[1] = Point(pos.x + TILE_WIDTH, pos.y);
+	}
+	else {
+		neighbours[1] = Point(0, 0);
+	}
+
+	if (beCarefulLeft(pos)) {
+		neighbours[2] = Point(pos.x - TILE_WIDTH, pos.y);
+	}
+	else {
+		neighbours[2] = Point(0, 0);
+	}
+
+	if (beCarefulDown(pos)) {
+		neighbours[3] = Point(pos.x, pos.y - TILE_HEIGHT);
+	}
+	else {
+		neighbours[3] = Point(0, 0);
+	}
+}
+
+void Enemy::bestChoise() {
+	auto position = this->getPosition();
+	auto target = this->getDestination();
+	auto coord = mapGame->tileCoordForPosition(position);
+	int X = (int)coord.x;
+	int Y = (int)coord.y;
+	auto dist = target - position;
+	if (dist.x >= 0) {
+		if (neighbours[1] != Point(0, 0)) {
+			this->setMovingState(MOVE_RIGHT);
+			return;
+		}
+	}
+	if (dist.x < 0) {
+		if (neighbours[2] != Point(0, 0)) {
+			this->setMovingState(MOVE_LEFT);
+			return;
+		}
+	}
+
+	if (dist.y >= 0) {
+		if (neighbours[0] != Point(0, 0)) {
+			this->setMovingState(MOVE_UP);
+			return;
+		}
+	}
+	if (dist.y < 0) {
+		if (neighbours[3] != Point(0, 0)) {
+			this->setMovingState(MOVE_DOWN);
+			return;
+		}
+	}
+}
+
+void Enemy::controlLeft() {
+	if (neighbours[2] != Point(0, 0)) {
+		this->setMovingState(MOVE_LEFT);
+		return;
+	}
+}
+
+void Enemy::controlUp() {
+	if (neighbours[0] != Point(0, 0)) {
+		this->setMovingState(MOVE_UP);
+		return;
+	}
+}
+
+void Enemy::controlRight() {
+	if (neighbours[1] != Point(0, 0)) {
+		this->setMovingState(MOVE_RIGHT);
+		return;
+	}
+}
+
+void Enemy::controlDown() {
+	if (neighbours[3] != Point(0, 0)) {
+		this->setMovingState(MOVE_DOWN);
+		return;
+	}
+}
+
+
 
 void Enemy::setMapGame(MapManager* pMap) {
 	mapGame = pMap;
@@ -346,7 +476,10 @@ void Enemy::startAttacking() {
 			projectile = EnemyBullet::create("GunBullet.png");
 			this->setWait(1);
 		}
-		this->setWait(this->getWait() - 1);
+		else {
+			this->setWait(this->getWait() - 1);
+			return;
+		}
 	}
 	else if (w == RIFLE) {
 		SoundManager::getInstance()->startRifleSound();
@@ -362,7 +495,10 @@ void Enemy::startAttacking() {
 			projectile = EnemyBullet::create("SniperBullet.png");
 			this->setWait(2);
 		}
-		this->setWait(this->getWait() - 1);
+		else {
+			this->setWait(this->getWait() - 1);
+			return;
+		}
 	}
 	else if (w == RADIATION) {
 		if (this->getWait() == 0) {
@@ -372,6 +508,7 @@ void Enemy::startAttacking() {
 		}
 		else {
 			this->setWait(this->getWait() - 1);
+			return;
 		}
 	}
 	else if (w == GRENADE) {
@@ -380,8 +517,10 @@ void Enemy::startAttacking() {
 			projectile = EnemyBullet::create("Grenade.png");
 			this->setWait(6);
 		}
-		this->setWait(this->getWait() - 1);
-
+		else {
+			this->setWait(this->getWait() - 1);
+			return;
+		}
 	}
 	projectile->setPosition(this->getPosition());
 	projectile->setTargetPlayer(this->target);
@@ -407,44 +546,44 @@ void Enemy::hurt() {
 	if (target->getActualWeapon() == GUN) {
 		if (this->getActualProtection() == SHIELD)
 		{
-			this->life -= 0.5f;
+			this->life -= 0.5f * target->getPower();
 			return;
 		}
 		else {
-			this->life -= 1.0f;
+			this->life -= 1.0f * target->getPower();
 			return;
 		}
 	}
 	else if (target->getActualWeapon() == RIFLE) {
 		if (this->getActualProtection() == SHIELD)
 		{
-			this->life -= 0.25f;
+			this->life -= 0.25f * target->getPower();
 			return;
 		}
 		else {
-			this->life -= 0.5f;
+			this->life -= 0.5f * target->getPower();
 			return;
 		}
 	}
 	else if (target->getActualWeapon() == SNIPER) {
 		if (this->getActualProtection() == SHIELD)
 		{
-			this->life -= 0.75f;
+			this->life -= 0.75f * target->getPower();
 			return;
 		}
 		else {
-			this->life -= 1.5f;
+			this->life -= 1.5f * target->getPower();
 			return;
 		}
 	}
 	else if (target->getActualWeapon() == KNIFE) {
 		if (this->getActualProtection() == ARMGUARD)
 		{
-			this->life -= 1.0f;
+			this->life -= 1.0f * target->getPower();
 			return;
 		}
 		else {
-			this->life -= 2.0f;
+			this->life -= 2.0f * target->getPower();
 			return;
 		}
 	}
@@ -461,7 +600,7 @@ void Enemy::hurt() {
 	else if (target->getActualWeapon() == GRENADE || this->getActualWeapon() == GRENADE) {
 		if (this->getActualProtection() == ARMOR)
 		{
-			this->life -= 1.0f;
+			this->life -= 1.0f * target->getPower();
 			return;
 		}
 		else

@@ -32,6 +32,7 @@ public:
 	void mask(Ref *pSender);
 	void armguard(Ref *pSender);
 	Player* getPlayer();
+	void update(float dt) override;
 
 	// a selector callback
 	void menuCloseCallback(cocos2d::Ref* pSender);
@@ -45,6 +46,7 @@ private:
 	cocos2d::Sprite* protectionSelected;
 	cocos2d::Size visibleSize;
 	cocos2d::ui::ScrollView* scrollView;
+	float timer;
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(StrategyMenu);

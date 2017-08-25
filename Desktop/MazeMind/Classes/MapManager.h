@@ -54,6 +54,8 @@ public:
 	void setStrategyMenu(StrategyMenu* strategy);
 	void setPlayer(Player* player);
 	Player* getPlayer();
+	HudLayer* getHud();
+	void setHud(HudLayer* hud);
 
 
 private:

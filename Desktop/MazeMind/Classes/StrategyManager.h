@@ -11,7 +11,7 @@ class StrategyManager
 public:	
 	
 	static StrategyManager* getInstance();
-
+    
 	void defensiveAsset(Player* player);
 	void defeatEnemy(Player* player);
 	void distanceAttack(Player* player);

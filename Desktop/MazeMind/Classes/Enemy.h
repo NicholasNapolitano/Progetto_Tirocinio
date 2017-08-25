@@ -79,7 +79,14 @@ public:
 	float getTotalTime();
 	void setDeltaTime(float time);
 	void boom();
-	int decision = 4;
+	int decision = 3;
+	void controlLeft();
+	void controlRight();
+	void controlUp();
+	void controlDown();
+
+	void lookingAround();
+	void bestChoise();
 
 protected:
 
@@ -107,6 +114,7 @@ private:
 	EnemyType type;
 	int wait;
 	Sprite* booom;
+	Point neighbours[4];
 };
 
 #endif // __ENEMY_H__

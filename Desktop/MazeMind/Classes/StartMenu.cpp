@@ -2,6 +2,7 @@
 #include "MapManager.h"
 #include "GameManager.h"
 #include "SimpleAudioEngine.h"
+#include "SoundManager.h"
 
 USING_NS_CC;
 
@@ -29,7 +30,8 @@ bool StartMenu::init()
 	{
 		return false;
 	}
-
+	
+	this->timer = 0;
 	this->core = GameManager::getInstance();
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -69,6 +71,7 @@ bool StartMenu::init()
 	menu->setPosition(Point(0, 0));
 	this->addChild(menu);
 
+	this->scheduleUpdate();
 
 	return true;
 
@@ -92,6 +95,14 @@ void StartMenu::Settings(Ref *pSender)
 {
 	log("Settings");
 	log("Sorry, not implemented yet!");
+}
+
+void StartMenu::update(float dt) {
+	this->timer += dt;
+	if (timer >= 70.0f) {
+		SoundManager::getInstance()->startMenuMusic();
+		timer = 0;
+	}
 }
 
 void StartMenu::menuCloseCallback(Ref* pSender)
