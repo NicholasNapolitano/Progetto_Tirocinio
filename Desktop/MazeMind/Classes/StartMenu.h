@@ -11,17 +11,16 @@ public:
 	static cocos2d::Scene* createScene();
 
 	virtual bool init();
-	void Play(Ref *pSender);
-	void Highscores(Ref *pSender);
-	void Settings(Ref *pSender);
-	void update(float dt) override;
+	void play(Ref *pSender);
+	void highscore(Ref *pSender);
+	void settings(Ref *pSender);
 
 	// a selector callback
 	void menuCloseCallback(cocos2d::Ref* pSender);
 
 private:
 	GameManager* core;
-	float timer;
+	cocos2d::Sprite* background;
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(StartMenu);

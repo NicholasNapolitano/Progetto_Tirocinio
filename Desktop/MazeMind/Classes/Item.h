@@ -15,7 +15,7 @@ public:
 	void update(float dt) override;
 	void setType(Thing thing);
 	Thing getType();
-	Player getPlayer();
+	Player* getPlayer();
 	void setPlayer(Player* player);
 
 

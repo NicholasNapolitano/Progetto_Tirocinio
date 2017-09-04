@@ -7,14 +7,22 @@
 #include "StrategyMenu.h"
 #include "GameOverScene.h"
 #include "HudLayer.h"
+#include "HighScoreScene.h"
+#include "SettingsScene.h"
 #include <typeinfo>
 
 USING_NS_CC;
 
+//Singleton instance of the class
+
 GameManager* GameManager::instance = 0;
+
+//Constructor
 
 GameManager::GameManager() {
 }
+
+//Return the instance of the class
 
 GameManager* GameManager::getInstance()
 {
@@ -23,16 +31,22 @@ GameManager* GameManager::getInstance()
 	return instance;
 }
 
+//Go to the menu
+
 void GameManager::startGame() {
 	auto scene = StartMenu::createScene();
-	Director::getInstance()->runWithScene(scene);
+	Director::getInstance()->pushScene(scene);
 	SoundManager::getInstance()->startMenuMusic();
 }
+
+//Go to the Stategymenu
 
 void GameManager::selectStrategy() {
 	auto scene = StrategyMenu::createScene();
 	Director::getInstance()->pushScene(TransitionFade::create(1.0f, scene));
 }
+
+//Go to the Labyrinth
 
 void GameManager::playGame(Player* player) {
 	Scene* scene = MapManager::createScene();
@@ -40,9 +54,12 @@ void GameManager::playGame(Player* player) {
 	gameScene->getPlayer()->setStrategy(player->getStrategy());
 	gameScene->getPlayer()->setActualWeapon(player->getActualWeapon());
 	gameScene->getPlayer()->setActualProtection(player->getActualProtection());
+	gameScene->getPlayer()->setCrawlingStrategy(player->getCrawlingStrategy());
 	Director::getInstance()->pushScene(scene);
 	SoundManager::getInstance()->startGameMusic();
 }
+
+//Return to the Labyrinth after a battle
 
 void GameManager::resumeExploration(Player* player) {
 	SoundManager::getInstance()->stopMusic();
@@ -52,6 +69,8 @@ void GameManager::resumeExploration(Player* player) {
 	player->getMapGame()->getPlayer()->setLife(player->getLife());
 	resumeGame();
 }
+
+//Go to the CombatScene to start a battle
 
 void GameManager::startBattle(Enemy* enemy, Player* player) {
 	Scene* scene = CombatScene::createScene();
@@ -69,17 +88,23 @@ void GameManager::startBattle(Enemy* enemy, Player* player) {
 	SoundManager::getInstance()->startBattleMusic();
 }
 
+//Pause the Game
+
 void GameManager::pauseGame() {
 	Director::getInstance()->pause();
 	SoundManager::getInstance()->stopMusic();
 	SoundManager::getInstance()->stopEffects();
 }
 
+//Resume the Game
+
 void GameManager::resumeGame() {
 	SoundManager::getInstance()->resumeEffects();
 	SoundManager::getInstance()->resumeMusic();
 	Director::getInstance()->resume();
 }
+
+//Go to GameOverScene (Victory)
 
 void GameManager::winGame() {
 	GameOverScene *gameOverScene = GameOverScene::create();
@@ -89,6 +114,8 @@ void GameManager::winGame() {
 	SoundManager::getInstance()->startVictorySound();
 }
 
+//Go to GameOverScene (Defeat)
+
 void GameManager::loseGame() {
 	GameOverScene *gameOverScene = GameOverScene::create();
 	gameOverScene->getLayer()->getLabel()->setString("You Lose :(");
@@ -97,9 +124,13 @@ void GameManager::loseGame() {
 	SoundManager::getInstance()->startLoseSound();
 }
 
+//Close the Game
+
 void GameManager::endGame() {
 	Director::getInstance()->end();
 }
+
+//Return to the Menu
 
 void GameManager::restartGame() {
 	auto scene = StartMenu::createScene();
@@ -108,7 +139,22 @@ void GameManager::restartGame() {
 	SoundManager::getInstance()->startMenuMusic();
 }
 
+//It Controls if the Game is in pause
+
 bool GameManager::inPause() {
 	return Director::getInstance()->isPaused();
 }
 
+//Go to HighScoreScene
+
+void GameManager::viewHighScore() {
+	auto scene = HighScoreScene::createScene(0);
+	Director::getInstance()->pushScene(TransitionFlipX::create(1.0f, scene));
+}
+
+//Go To SettingsScene
+
+void GameManager::changeSettings() {
+	auto scene = SettingsScene::createScene();
+	Director::getInstance()->pushScene(TransitionFlipY::create(1.0f, scene));
+}

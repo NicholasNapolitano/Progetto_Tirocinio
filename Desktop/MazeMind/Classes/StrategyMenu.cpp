@@ -34,10 +34,32 @@ bool StrategyMenu::init()
 		return false;
 	}
 
-	this->timer = 0;
 	this->core = GameManager::getInstance();
 	visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
+	// Screen real dimensions
+	auto vWidth = visibleSize.width;
+	auto vHeight = visibleSize.height;
+
+	// Original image
+	auto backOrig = Sprite::create("Background.png");
+	auto oWidth = backOrig->getContentSize().width;
+	auto oHeight = backOrig->getContentSize().height;
+	backOrig->setFlippedY(true);
+	backOrig->setScale(vWidth / oWidth, vHeight / oHeight); // backOrig scaled to screen size
+	backOrig->setPosition(vWidth / 2, vHeight / 2);
+
+	// Create new texture with background in the exact size of the screen
+	auto renderTexture = RenderTexture::create(vWidth, vHeight, Texture2D::PixelFormat::RGBA8888);
+	renderTexture->begin();
+	backOrig->visit();
+	renderTexture->end();
+
+	// Create new Sprite without scale, which perfoms much better
+	background = Sprite::createWithTexture(renderTexture->getSprite()->getTexture());
+	background->setPosition(vWidth / 2, vHeight / 2);
+	addChild(background);
 
 	scrollView = ui::ScrollView::create();
 	scrollView->setClippingEnabled(true);
@@ -45,7 +67,7 @@ bool StrategyMenu::init()
 	scrollView->setContentSize(Size(visibleSize.width, visibleSize.height));
 	scrollView->setDirection(ui::ScrollView::Direction::VERTICAL);
 	scrollView->getInnerContainer()->setLayoutType(ui::Layout::Type::VERTICAL);
-	scrollView->setInnerContainerSize(Size(visibleSize.width, visibleSize.height * 2));
+	scrollView->setInnerContainerSize(Size(visibleSize.width, visibleSize.height * 3));
 	scrollView->setPosition(Vec2(0, 0));
 	scrollView->retain();
 	this->addChild(scrollView);
@@ -66,11 +88,13 @@ bool StrategyMenu::init()
 		origin.y + closeItem->getContentSize().height / 2));
 
 	strategySelected = Sprite::create("Selected.png");
-	scrollView->addChild(strategySelected);
+	scrollView->addChild(strategySelected, 1);
 	weaponSelected = Sprite::create("Selected.png");
-	scrollView->addChild(weaponSelected);
+	scrollView->addChild(weaponSelected, 1);
 	protectionSelected = Sprite::create("Selected.png");
-	scrollView->addChild(protectionSelected);
+	scrollView->addChild(protectionSelected, 1);
+	crawlingSelected = Sprite::create("Selected.png");
+	scrollView->addChild(crawlingSelected, 1);
 
 	Sprite* _gun_ = Sprite::create("Gun.png");
 	Sprite* _rifle_ = Sprite::create("Rifle.png");
@@ -100,23 +124,27 @@ bool StrategyMenu::init()
 	auto menu_item_14 = MenuItemSprite::create(_radiation_, _radiation_, CC_CALLBACK_1(StrategyMenu::radiation, this));
 	auto menu_item_15 = MenuItemFont::create("Stun_Enemy", CC_CALLBACK_1(StrategyMenu::stunEnemy, this));
 	auto menu_item_16 = MenuItemSprite::create(_armguard_, _armguard_, CC_CALLBACK_1(StrategyMenu::armguard, this));
+	auto menu_item_17 = MenuItemFont::create("Normal", CC_CALLBACK_1(StrategyMenu::normal, this));
+	auto menu_item_18 = MenuItemFont::create("Go_To_The_Goal", CC_CALLBACK_1(StrategyMenu::goToTheGoal, this));
 
-	menu_item_1->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 5) * 9.5));
-	menu_item_2->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 5) * 8.05));
-	menu_item_3->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 7) * 7.7));
-	menu_item_4->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 6) * 6.2));
-	menu_item_5->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 5) * 7.75));
-	menu_item_6->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 5) * 7.45));
-	menu_item_7->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 5) * 7.15));
-	menu_item_8->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 7) * 6.80));
-	menu_item_9->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 5) * 6.75));
-	menu_item_10->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 7) * 6.35));
-	menu_item_11->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 7) * 3.50));
-	menu_item_12->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 7) * 2.50));
-	menu_item_13->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 7) * 1.50));
-	menu_item_14->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 5) * 6.40));
-	menu_item_15->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 7) * 5.90));
-	menu_item_16->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 7) * 0.50));
+	menu_item_1->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 1.05) * 3));
+	menu_item_2->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 1.30) * 3));
+	menu_item_3->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 1.65) * 3));
+	menu_item_4->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 1.75) * 3));
+	menu_item_5->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 1.35) * 3));
+	menu_item_6->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 1.40) * 3));
+	menu_item_7->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 1.45) * 3));
+	menu_item_8->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 1.85) * 3));
+	menu_item_9->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 1.50) * 3));
+	menu_item_10->setPosition(Point(visibleSize.width / 2, (visibleSize.height/ 1.95) * 3));
+	menu_item_11->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 2.30) * 3));
+	menu_item_12->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 2.60) * 3));
+	menu_item_13->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 2.90) * 3));
+	menu_item_14->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 1.55) * 3));
+	menu_item_15->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 2.05) * 3));
+	menu_item_16->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 3.40) * 3));
+	menu_item_17->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 1.15) * 3));
+	menu_item_18->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 1.20) * 3));
 
 	menu_item_1->setColor(Color3B::RED);
 
@@ -124,7 +152,7 @@ bool StrategyMenu::init()
 	auto label = Label::createWithTTF("Choose Your Strategy", "fonts/Marker Felt.ttf", 24);
 
 	// position the label on the center of the screen
-	label->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 6) * 7.0));
+	label->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 1.60) * 3));
 	label->setTextColor(Color4B::BLUE);
 	// add the label as a child to this layer
 	scrollView->addChild(label, 1);
@@ -132,7 +160,7 @@ bool StrategyMenu::init()
 	auto label1 = Label::createWithTTF("Choose Your Weapon", "fonts/Marker Felt.ttf", 24);
 
 	// position the label on the center of the screen
-	label1->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 5) * 8.32));
+	label1->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 1.25) * 3));
 	label1->setTextColor(Color4B::YELLOW);
 	// add the label as a child to this layer
 	scrollView->addChild(label1, 1);
@@ -140,20 +168,29 @@ bool StrategyMenu::init()
 	auto label2 = Label::createWithTTF("Choose Your Protection", "fonts/Marker Felt.ttf", 24);
 
 	// position the label on the center of the screen
-	label2->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 7) * 4.32));
+	label2->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 2.15) * 3));
 	label2->setTextColor(Color4B::GREEN);
 	// add the label as a child to this layer
 	scrollView->addChild(label2, 1);
 
-	auto menu = Menu::create(menu_item_1, menu_item_2, menu_item_3, menu_item_4, menu_item_5, menu_item_6, menu_item_7, menu_item_8, menu_item_9, menu_item_10, menu_item_11, menu_item_12, menu_item_13, menu_item_14, menu_item_15, menu_item_16, closeItem, NULL);
-	menu->setPosition(Point(0, 0));
-	scrollView->addChild(menu);
+	auto label3 = Label::createWithTTF("Choose Your Exploration", "fonts/Marker Felt.ttf", 24);
 
-	this->scheduleUpdate();
+	// position the label on the center of the screen
+	label3->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 1.10) * 3));
+	label3->setTextColor(Color4B::MAGENTA);
+	// add the label as a child to this layer
+	scrollView->addChild(label3, 1);
+
+	auto menu = Menu::create(menu_item_1, menu_item_2, menu_item_3, menu_item_4, menu_item_5, menu_item_6, menu_item_7, menu_item_8, menu_item_9, menu_item_10, menu_item_11, menu_item_12, menu_item_13, menu_item_14, menu_item_15, menu_item_16, menu_item_17, menu_item_18, closeItem, NULL);
+	menu->setPosition(Point(0, 0));
+	scrollView->addChild(menu, 1);
+
 
 	return true;
 
 }
+
+//Method which asks GameManager to push MapManager scene
 
 void StrategyMenu::enterTheGame(Ref *pSender)
 {
@@ -163,11 +200,31 @@ void StrategyMenu::enterTheGame(Ref *pSender)
 
 }
 
+//    ----- Exploration Strategies -----
+
+void StrategyMenu::normal(Ref* pSender) {
+	log("Normal");
+	this->player->setCrawlingStrategy(NORMAL);
+	crawlingSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 8, (visibleSize.height / 1.15) * 3));
+	SoundManager::getInstance()->startNormalExplorationChosenSound();
+	return;
+}
+
+void StrategyMenu::goToTheGoal(Ref* pSender) {
+	log("Go_To_The_Goal");
+	this->player->setCrawlingStrategy(GO_TO_GOAL);
+	crawlingSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 4, (visibleSize.height / 1.20) * 3));
+	SoundManager::getInstance()->startGoToTheGoalExplorationChosenSound();
+	return;
+}
+
+//    ----- Weapons ----- 
+
 void StrategyMenu::gun(Ref *pSender)
 {
 	log("Gun");
 	this->player->setActualWeapon(GUN);
-	weaponSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 8, (visibleSize.height / 5) * 8.05));
+	weaponSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 8, (visibleSize.height / 1.30) * 3));
 	SoundManager::getInstance()->startGunChosenSound();
 	return;
 }
@@ -176,7 +233,7 @@ void StrategyMenu::rifle(Ref *pSender)
 {
 	log("Rifle");
 	player->setActualWeapon(RIFLE);
-	weaponSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 8, (visibleSize.height / 5) * 7.75));
+	weaponSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 8, (visibleSize.height / 1.35) * 3));
 	SoundManager::getInstance()->startRifleChosenSound();
 	return;
 }
@@ -185,7 +242,7 @@ void StrategyMenu::sniper(Ref *pSender)
 {
 	log("Sniper");
 	player->setActualWeapon(SNIPER);
-	weaponSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 8, (visibleSize.height / 5) * 7.45));
+	weaponSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 8, (visibleSize.height / 1.40) * 3));
 	SoundManager::getInstance()->startSniperChosenSound();
 	return;
 }
@@ -194,7 +251,7 @@ void StrategyMenu::grenade(Ref *pSender)
 {
 	log("Grenade");
 	player->setActualWeapon(GRENADE);
-	weaponSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 8, (visibleSize.height / 5) * 7.15));
+	weaponSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 8, (visibleSize.height / 1.45) * 3));
 	SoundManager::getInstance()->startGrenadeChosenSound();
 	return;
 }
@@ -203,7 +260,7 @@ void StrategyMenu::knife(Ref *pSender)
 {
 	log("Knife");
 	player->setActualWeapon(KNIFE);
-	weaponSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width/ 8, (visibleSize.height / 5) * 6.75));
+	weaponSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width/ 8, (visibleSize.height / 1.50) * 3));
 	SoundManager::getInstance()->startKnifeChosenSound();
 	return;
 }
@@ -212,16 +269,18 @@ void StrategyMenu::radiation(Ref *pSender)
 {
 	log("Radiation");
 	player->setActualWeapon(RADIATION);
-	weaponSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 8, (visibleSize.height / 5) * 6.40));
+	weaponSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 8, (visibleSize.height / 1.55) * 3));
 	SoundManager::getInstance()->startRadiationChosenSound();
 	return;
 }
+
+//    ----- Fight Strategies -----
 
 void StrategyMenu::defeatEnemy(Ref *pSender)
 {
 	log("Defeat_Enemy");
 	player->setStrategy(DEFEAT_ENEMY);
-	strategySelected->setPosition(Point(visibleSize.width /2 + visibleSize.width / 4, (visibleSize.height / 7) * 7.7));
+	strategySelected->setPosition(Point(visibleSize.width /2 + visibleSize.width / 4, (visibleSize.height / 1.65) * 3));
 	SoundManager::getInstance()->startDefeatEnemyChosenSound();
 	return;
 }
@@ -230,7 +289,7 @@ void StrategyMenu::distanceAttack(Ref *pSender)
 {
 	log("Distance_Attack");
 	player->setStrategy(DISTANCE_ATTACK);
-	strategySelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 4, (visibleSize.height / 6) * 6.2));
+	strategySelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 4, (visibleSize.height / 1.75) * 3));
 	SoundManager::getInstance()->startDistanceAttackChosenSound();
 	return;
 }
@@ -239,7 +298,7 @@ void StrategyMenu::retreat(Ref *pSender)
 {
 	log("Retreat");
 	player->setStrategy(RETREAT);
-	strategySelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 4, (visibleSize.height / 7) * 6.80));
+	strategySelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 4, (visibleSize.height / 1.85) * 3));
 	SoundManager::getInstance()->startRetreatChosenSound();
 	return;
 }
@@ -248,7 +307,7 @@ void StrategyMenu::bePatient(Ref *pSender)
 {
 	log("Be_Patient");
 	player->setStrategy(BE_PATIENT);
-	strategySelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 4, (visibleSize.height / 7) * 6.35));
+	strategySelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 4, (visibleSize.height / 1.95) * 3));
 	SoundManager::getInstance()->startBePatientChosenSound();
 	return;
 }
@@ -257,16 +316,18 @@ void StrategyMenu::stunEnemy(Ref *pSender)
 {
 	log("Stun_Enemy");
 	player->setStrategy(STUN_ENEMY);
-	strategySelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 4, (visibleSize.height / 7) * 5.90));
+	strategySelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 4, (visibleSize.height / 2.05) * 3));
 	SoundManager::getInstance()->startStunEnemyChosenSound();
 	return;
 }
+
+//    ----- Protections -----
 
 void StrategyMenu::shield(Ref *pSender)
 {
 	log("SHIELD");
 	player->setActualProtection(SHIELD);
-	protectionSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 13, (visibleSize.height / 7) * 3.50));
+	protectionSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 13, (visibleSize.height / 2.30) * 3));
 	SoundManager::getInstance()->startShieldChosenSound();
 	return;
 }
@@ -275,7 +336,7 @@ void StrategyMenu::armor(Ref *pSender)
 {
 	log("ARMOR");
 	player->setActualProtection(ARMOR);
-	protectionSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 13, (visibleSize.height / 7) * 2.50));
+	protectionSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 13, (visibleSize.height / 2.60) * 3));
 	SoundManager::getInstance()->startArmorChosenSound();
 	return;
 }
@@ -284,7 +345,7 @@ void StrategyMenu::mask(Ref *pSender)
 {
 	log("MASK");
 	player->setActualProtection(MASK);
-	protectionSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 13, (visibleSize.height / 7) * 1.50));
+	protectionSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 13, (visibleSize.height / 2.90) * 3));
 	SoundManager::getInstance()->startMaskChosenSound();
 	return;
 }
@@ -293,22 +354,12 @@ void StrategyMenu::armguard(Ref *pSender)
 {
 	log("Armguard");
 	player->setActualProtection(ARMGUARD);
-	protectionSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 13, (visibleSize.height / 7) * 0.50));
+	protectionSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 13, (visibleSize.height / 3.40) * 3));
 	SoundManager::getInstance()->startArmguardChosenSound();
 	return;
 }
 
-Player* StrategyMenu::getPlayer() {
-	return this->player;
-}
-
-void StrategyMenu::update(float dt) {
-	this->timer += dt;
-	if (timer >= 70.0f) {
-		SoundManager::getInstance()->startMenuMusic();
-		timer = 0;
-	}
-}
+//Method which ends the game
 
 void StrategyMenu::menuCloseCallback(Ref* pSender)
 {
@@ -327,7 +378,12 @@ void StrategyMenu::menuCloseCallback(Ref* pSender)
 
 }
 
+//Getter & Setter
 
 void StrategyMenu::setMapManager(MapManager* manager) {
 	this->manager = manager;
+}
+
+Player* StrategyMenu::getPlayer() {
+	return this->player;
 }

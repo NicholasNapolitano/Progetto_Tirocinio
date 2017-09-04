@@ -44,6 +44,9 @@ public:
 	void startArmorChosenSound();
 	void startMaskChosenSound();
 	void startArmguardChosenSound();
+	void startDropItemSound();
+	void startNormalExplorationChosenSound();
+	void startGoToTheGoalExplorationChosenSound();
 
 protected:
 	

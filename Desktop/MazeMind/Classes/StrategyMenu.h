@@ -31,8 +31,9 @@ public:
 	void armor(Ref *pSender);
 	void mask(Ref *pSender);
 	void armguard(Ref *pSender);
+	void normal(Ref *pSender);
+	void goToTheGoal(Ref *pSender);
 	Player* getPlayer();
-	void update(float dt) override;
 
 	// a selector callback
 	void menuCloseCallback(cocos2d::Ref* pSender);
@@ -44,9 +45,10 @@ private:
 	cocos2d::Sprite* strategySelected;
 	cocos2d::Sprite* weaponSelected;
 	cocos2d::Sprite* protectionSelected;
+	cocos2d::Sprite* crawlingSelected;
 	cocos2d::Size visibleSize;
 	cocos2d::ui::ScrollView* scrollView;
-	float timer;
+	cocos2d::Sprite* background;
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(StrategyMenu);

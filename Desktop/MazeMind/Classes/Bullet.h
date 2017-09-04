@@ -8,6 +8,8 @@ USING_NS_CC;
 class CombatScene;
 class GameManager;
 
+//Abstract class to model a general bullet on the CombatScene
+
 class Bullet : public cocos2d::Sprite
 {
 public:

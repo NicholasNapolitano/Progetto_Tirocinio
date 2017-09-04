@@ -86,7 +86,6 @@ public:
 	void controlDown();
 
 	void lookingAround();
-	void bestChoise();
 
 protected:
 

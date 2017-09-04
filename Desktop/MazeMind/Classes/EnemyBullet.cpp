@@ -7,6 +7,8 @@
 
 USING_NS_CC;
 
+//Method which create an EnemyBullet based on a image file stored in the "Resources" Directory of the project
+
 EnemyBullet* EnemyBullet::create(const std::string& filename)
 {
 	EnemyBullet *bullet = new (std::nothrow) EnemyBullet();
@@ -22,9 +24,7 @@ EnemyBullet* EnemyBullet::create(const std::string& filename)
 	return nullptr;
 }
 
-void EnemyBullet::setTargetPlayer(Player* player) {
-	this->player = player;
-}
+//Method which described what happens when the EnemyBullet hits the Player (based on the Weapon)
 
 void EnemyBullet::hitPlayer() {
 	if (this->weapon == GRENADE) {
@@ -58,6 +58,8 @@ void EnemyBullet::hitPlayer() {
 	}
 }
 
+//Method which described what happens when during a grenade explosion
+
 void EnemyBullet::explosion(Ref *pSender) {
 	auto map = this->scene->getTileMap();
 	auto mat = this->scene->getMap();
@@ -67,6 +69,8 @@ void EnemyBullet::explosion(Ref *pSender) {
 	this->runAction(FadeOut::create(0.1f));
 	explode->runAction(FadeOut::create(0.5f));
 }
+
+//Method which described what happens when during a Radiation grenade explosion
 
 void EnemyBullet::stun(Ref *pSender) {
 	auto map1 = this->scene->getTileMap();
@@ -79,12 +83,16 @@ void EnemyBullet::stun(Ref *pSender) {
 	return;
 }
 
+//Method which places the sprite of the Granade's explosion
+
 void EnemyBullet::setExplosionSprite(Ref *pSender) {
 	SoundManager::getInstance()->startGrenadeSound();
 	explode = Sprite::create("Explosion.png");
 	explode->setPosition(this->getPosition());
 	this->getParent()->addChild(explode);
 }
+
+//Method which places the sprite of the Radiation granade's explosion
 
 void EnemyBullet::setRadiationSprite(Ref *pSender) {
 	SoundManager::getInstance()->startGasSound();
@@ -93,6 +101,8 @@ void EnemyBullet::setRadiationSprite(Ref *pSender) {
 	this->getParent()->addChild(gas);
 }
 
+//Method which removes the sprite of the Granade's explosion
+
 void EnemyBullet::deleteExplosionSprite(Ref *pSender) {
 	this->getParent()->removeChild(explode);
 	this->unscheduleUpdate();
@@ -100,12 +110,16 @@ void EnemyBullet::deleteExplosionSprite(Ref *pSender) {
 	return;
 }
 
+//Method which removes the sprite of the Radiation granade's explosion
+
 void EnemyBullet::deleteRadiationSprite(Ref *pSender) {
 	this->getParent()->removeChild(gas);
 	this->unscheduleUpdate();
 	this->getParent()->removeChild(this);
 	return;
 }
+
+//Method used to set the State of the EnemyBullet and discriminates its behaviour
 
 void EnemyBullet::setState(State state)
 {
@@ -119,16 +133,7 @@ void EnemyBullet::setState(State state)
 	}
 }
 
-const State EnemyBullet::getState() const
-{
-	return _state;
-}
-
-const char* EnemyBullet::getStateName() const
-{
-	return typeid(_state).name();
-}
-
+//Method to schedule the EnemyBullet every frame
 
 void EnemyBullet::update(float dt)
 {
@@ -221,7 +226,7 @@ void EnemyBullet::update(float dt)
 				auto offset = Point(player->getPosition() - this->getPosition());
 				offset.normalize();
 				auto shootAmount = offset * 130;
-				auto realDest = shootAmount + this->getPosition();
+				auto realDest = -(shootAmount + this->getPosition());
 
 				auto callBack0 = CallFuncN::create(CC_CALLBACK_1(EnemyBullet::explosion, this));
 				auto callBack1 = CallFuncN::create(CC_CALLBACK_1(EnemyBullet::setExplosionSprite, this));
@@ -261,6 +266,8 @@ void EnemyBullet::update(float dt)
 	}
 }
 
+//Getters & Setters
+
 void EnemyBullet::setPreviousState(State state)
 {
 	previousState = state;
@@ -273,4 +280,18 @@ void EnemyBullet::setCombatScene(CombatScene* scene)
 
 void EnemyBullet::setWeapon(Weapon weapon) {
 	this->weapon = weapon;
+}
+
+void EnemyBullet::setTargetPlayer(Player* player) {
+	this->player = player;
+}
+
+const State EnemyBullet::getState() const
+{
+	return _state;
+}
+
+const char* EnemyBullet::getStateName() const
+{
+	return typeid(_state).name();
 }

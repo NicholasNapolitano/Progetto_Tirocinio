@@ -1,18 +1,21 @@
-#include "StartMenu.h"
-#include "MapManager.h"
+#include "HighScoreScene.h"
 #include "GameManager.h"
-#include "SimpleAudioEngine.h"
-#include "SoundManager.h"
 
 USING_NS_CC;
 
-Scene* StartMenu::createScene()
-{
+//Global variable used as a entrance parameter to create the scene
+
+unsigned int score;
+
+Scene* HighScoreScene::createScene(unsigned int tempScore)
+{   
+	score = tempScore;
+
 	// 'scene' is an autorelease object
 	auto scene = Scene::create();
 
 	// 'layer' is an autorelease object
-	auto layer = StartMenu::create();
+	auto layer = HighScoreScene::create();
 
 	// add layer as a child to scene
 	scene->addChild(layer);
@@ -22,7 +25,7 @@ Scene* StartMenu::createScene()
 }
 
 // on "init" you need to initialize your instance
-bool StartMenu::init()
+bool HighScoreScene::init()
 {
 	//////////////////////////////
 	// 1. super init first
@@ -30,7 +33,7 @@ bool StartMenu::init()
 	{
 		return false;
 	}
-	
+
 	this->core = GameManager::getInstance();
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -57,6 +60,7 @@ bool StartMenu::init()
 	background = Sprite::createWithTexture(renderTexture->getSprite()->getTexture());
 	background->setPosition(vWidth / 2, vHeight / 2);
 	addChild(background);
+
 	/////////////////////////////
 	// 2. add a menu item with "X" image, which is clicked to quit the program
 	//    you may modify it.
@@ -65,65 +69,58 @@ bool StartMenu::init()
 	auto closeItem = MenuItemImage::create(
 		"CloseNormal.png",
 		"CloseSelected.png",
-		CC_CALLBACK_1(StartMenu::menuCloseCallback, this));
+		CC_CALLBACK_1(HighScoreScene::menuCloseCallback, this));
 
 	closeItem->setPosition(Vec2(origin.x + visibleSize.width - closeItem->getContentSize().width / 2,
 		origin.y + closeItem->getContentSize().height / 2));
 
-	auto menu_item_1 = MenuItemFont::create("Play", CC_CALLBACK_1(StartMenu::play, this));
-	auto menu_item_2 = MenuItemFont::create("Highscore", CC_CALLBACK_1(StartMenu::highscore, this));
-	auto menu_item_3 = MenuItemFont::create("Settings", CC_CALLBACK_1(StartMenu::settings, this));
+
+	auto menu_item_1 = MenuItemFont::create("Menu", CC_CALLBACK_1(HighScoreScene::back, this));
 
 
-	menu_item_1->setPosition(Point(origin.x + visibleSize.width / 2, origin.y + visibleSize.height - menu_item_1->getContentSize().height * 4));
-	menu_item_1->setColor(Color3B::ORANGE);
-	menu_item_2->setPosition(Point(origin.x + visibleSize.width / 2, origin.y + visibleSize.height - menu_item_2->getContentSize().height * 8));
-	menu_item_2->setColor(Color3B::YELLOW);
-	menu_item_3->setPosition(Point(origin.x + visibleSize.width / 2, origin.y + visibleSize.height - menu_item_1->getContentSize().height * 12));
-	menu_item_3->setColor(Color3B::GREEN);
-	auto label0 = Label::createWithTTF("MAZE MIND", "fonts/Marker Felt.ttf", 40);
+	menu_item_1->setPosition(Point(origin.x + menu_item_1->getContentSize().width, origin.y + visibleSize.height - menu_item_1->getContentSize().height));
 
-	// position the label on the center of the screen
-	label0->setPosition(Point(origin.x + visibleSize.width / 2, visibleSize.height - label0->getContentSize().height));
-	label0->setTextColor(Color4B::RED);
-	// add the label as a child to this layer
-	this->addChild(label0, 1);
-
-	auto menu = Menu::create(menu_item_1, menu_item_2, menu_item_3, closeItem, NULL);
+	auto menu = Menu::create(menu_item_1, closeItem, NULL);
 	menu->setPosition(Point(0, 0));
 	this->addChild(menu, 1);
+    
+	//Object used to save Game states
+
+	UserDefault *def = UserDefault::getInstance();
+
+	auto highScore = def->getIntegerForKey("HIGHSCORE");
+
+	if (score > highScore) {
+		
+		highScore = score;
+
+		def->setIntegerForKey("HIGHSCORE", highScore);
+	}
+
+	def->flush();
+
+
+	String* tempHighScore = __String::createWithFormat("%d", highScore);
+	auto highScoreLabel = LabelTTF::create(tempHighScore->getCString(), "fonts/Marker Felt.ttf", 32);
+	highScoreLabel->setPosition(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2);
+	highScoreLabel->setColor(Color3B::YELLOW);
+	this->addChild(highScoreLabel);
 
 	return true;
 
 }
 
-//Method which asks GameManager to push StrategyMenu scene
+//Return to the Menu
 
-void StartMenu::play(Ref *pSender)
+void HighScoreScene::back(Ref *pSender)
 {
-	log("Play");
-	core->selectStrategy();
+	log("Back");
+	Director::getInstance()->popScene();
 }
 
-//Method which asks GameManager to push HighScoreScene scene
+//End the game
 
-void StartMenu::highscore(Ref *pSender)
-{
-	log("Highscores");
-	core->viewHighScore();
-}
-
-//Method which asks GameManager to push SettingsScene scene
-
-void StartMenu::settings(Ref *pSender)
-{
-	log("Settings");
-	core->changeSettings();
-}
-
-//Method which ends the game
-
-void StartMenu::menuCloseCallback(Ref* pSender)
+void HighScoreScene::menuCloseCallback(Ref* pSender)
 {
 	//Close the cocos2d-x game scene and quit the application
 	core->endGame();

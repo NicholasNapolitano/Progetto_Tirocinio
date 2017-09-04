@@ -3,6 +3,7 @@
 
 USING_NS_CC;
 
+// on "init" you need to initialize your instance
 bool GameOverScene::init()
 {
 	if (Scene::init())
@@ -19,9 +20,13 @@ bool GameOverScene::init()
 	}
 }
 
+//Constructor
+
 GameOverScene::GameOverScene() {
 
 }
+
+//Destructor
 
 GameOverScene::~GameOverScene()
 {
@@ -32,7 +37,7 @@ GameOverScene::~GameOverScene()
 	}
 }
 
-
+// on "init" you need to initialize your instance
 bool GameOverLayer::init()
 {
 	if (LayerColor::initWithColor(Color4B::WHITE))
@@ -58,14 +63,20 @@ bool GameOverLayer::init()
 	}
 }
 
+//Invoke the GameManager's method to return to the Menu
+
 void GameOverLayer::gameOverDone()
 {
 	GameManager::getInstance()->restartGame();
 }
 
+//Constructor
+
 GameOverLayer::GameOverLayer() {
 
 }
+
+//Destructor
 
 GameOverLayer::~GameOverLayer()
 {

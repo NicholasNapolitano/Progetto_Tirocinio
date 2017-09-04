@@ -59,10 +59,8 @@ public:
 	void setMapGame(MapManager* mapGame);
 	void setPreviousState(State state);
 
-	void followTheWall();
 	bool solve(int x, int y);
-	bool solve2(int x, int y);
-	int solve3(int x, int y);
+	int solve2(int x, int y);
 	void setState(State state);
 	void hurt();
 	void setCombatScene(CombatScene* arena);
@@ -90,11 +88,11 @@ public:
 	Enemy* getTarget();
 
 	void setMatrix();
+	void setMatrix2();
 	std::list<Point> getPath();
 	std::list<Point> getPathToGoal();
 
 	void lookingAround();
-	void bestChoise();
 
 	void setCrawlingStrategy(Crawling crwaling);
 	Crawling getCrawlingStrategy();
@@ -129,6 +127,7 @@ private:
 	Enemy* target;
 	int**  mappa;
 	int** matrix;
+	int** matrix2;
 	Point neighbours[4];
 	std::list<Point> path;
 	std::list<Point> pathToGoal;

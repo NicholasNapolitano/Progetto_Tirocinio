@@ -5,10 +5,16 @@
 
 USING_NS_CC;
 
+//Singleton instance of the class
+
 SoundManager* SoundManager::instance = 0;
+
+//Constructor
 
 SoundManager::SoundManager() {
 }
+
+//Return the instance of the class
 
 SoundManager* SoundManager::getInstance()
 {
@@ -17,28 +23,35 @@ SoundManager* SoundManager::getInstance()
 	return instance;
 }
 
+//Start Menu's music
+
 void SoundManager::startMenuMusic()
 {
 	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
 	audio->preloadBackgroundMusic("Menu.mp3");
-	audio->playBackgroundMusic("Menu.mp3");
+	audio->playBackgroundMusic("Menu.mp3", true);
 }
 
+//Start MapManager's music
 
 void SoundManager::startGameMusic()
 {
 
 	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
 	audio->preloadBackgroundMusic("Exploration.mp3");
-	audio->playBackgroundMusic("Exploration.mp3");
+	audio->playBackgroundMusic("Exploration.mp3", true);
 }
+
+//Start CombatScene's music
 
 void SoundManager::startBattleMusic()
 {
 	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
 	audio->preloadBackgroundMusic("Battle.mp3");
-	audio->playBackgroundMusic("Battle.mp3");
+	audio->playBackgroundMusic("Battle.mp3", true);
 }
+
+//Sound Effects
 
 void SoundManager::startHurtScream()
 {
@@ -104,31 +117,6 @@ void SoundManager::startLoseSound()
 {
 	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
 	audio->playEffect("Lose.mp3");
-}
-
-void SoundManager::stopMusic()
-{
-	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
-	audio->stopBackgroundMusic();
-}
-
-
-void SoundManager::stopEffects()
-{
-	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
-	audio->stopAllEffects();
-}
-
-void SoundManager::resumeEffects()
-{
-	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
-	audio->resumeAllEffects();
-}
-
-void SoundManager::resumeMusic()
-{
-	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
-	audio->resumeBackgroundMusic();
 }
 
 void SoundManager::startGunChosenSound()
@@ -219,4 +207,52 @@ void SoundManager::startArmguardChosenSound()
 {
 	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
 	audio->playEffect("Armguard.mp3");
+}
+
+void SoundManager::startDropItemSound() 
+{
+	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	audio->playEffect("Item.mp3");
+}
+
+void SoundManager::startNormalExplorationChosenSound() 
+{
+	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	audio->playEffect("Normal.mp3");
+}
+
+void SoundManager::startGoToTheGoalExplorationChosenSound()
+{
+	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	audio->playEffect("GoToTheGoal.mp3");
+}
+
+void SoundManager::stopMusic()
+{
+	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	audio->stopBackgroundMusic();
+}
+
+//Stop all Sound Effects
+
+void SoundManager::stopEffects()
+{
+	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	audio->stopAllEffects();
+}
+
+//Resume all Sound Effects
+
+void SoundManager::resumeEffects()
+{
+	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	audio->resumeAllEffects();
+}
+
+//Resume Music on the scene
+
+void SoundManager::resumeMusic()
+{
+	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	audio->resumeBackgroundMusic();
 }

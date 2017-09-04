@@ -43,7 +43,6 @@ public:
 
 
 	Point tileCoordForPosition(cocos2d::Point position);
-	Point positionCoordForTile(cocos2d::Point position);
 	void setHud(HudLayer* hud);
 	HudLayer* getHud();
 

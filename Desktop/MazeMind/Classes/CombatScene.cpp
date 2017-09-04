@@ -45,7 +45,7 @@ bool CombatScene::init()
 	Point center = Point(winSize.width + origin.x, winSize.height + origin.y);
 
 	tile = TMXTiledMap::create("Arena.tmx");
-	tile->setPosition(Vec2(10, 10));
+	tile->setPosition(Vec2(origin.x + 2, origin.y + 2));
 	layer = tile->getLayer("Ground");
 	container->addChild(tile, 1, "Mappa");
 
@@ -86,12 +86,12 @@ bool CombatScene::init()
 	_player->setTileMap(this->getTileMap());
 	_player->setActualScene(FIGHT);
 	_player->setState(IDLE);
-	_player->setPosition(Point(10, 10));
+	_player->setPosition(Point(origin.x + 10, origin.y + 10));
 	tile->addChild(_player, 5, "Player");
 
 	hud = new HudLayer();
 	this->addChild(hud, 15);
-	hud->setScore(100);
+	hud->setScore(0);
 
 	// Register Touch Event
 	auto dispatcher = Director::getInstance()->getEventDispatcher();
@@ -104,8 +104,8 @@ bool CombatScene::init()
 
 	log("WELCOME IN MY GAME. YOU HAVE TO REACH THE GOAL (THE STAIRS) TO WIN IT. GOOD LUCK!");
 
-	//_player->solve((int)_player->getPosition().x, (int)_player->getPosition().y);
-	tile->setScale(3.3f);
+	container->setScaleX(2.6 * Director::getInstance()->getContentScaleFactor());
+	container->setScaleY(2.6 * Director::getInstance()->getContentScaleFactor());
 
 	this->scheduleUpdate();
 
@@ -113,7 +113,7 @@ bool CombatScene::init()
 	return true;
 }
 
-
+//Method to schedule the CombatScene every frame
 
 void CombatScene::update(float dt)
 {
@@ -125,12 +125,11 @@ void CombatScene::update(float dt)
 		core->loseGame();
 	}
 
-
 	if (deltaTime >= 0.5f) {
 
 		hud->setScore(hud->getScore() - 1);
 
-		Point position = _player->getPosition();
+	/*	Point position = _player->getPosition();
 
 		Size winSize = Director::getInstance()->getWinSize();
 
@@ -142,18 +141,20 @@ void CombatScene::update(float dt)
 
 		Point centerOfView = Point(winSize.width / 2, winSize.height / 2);
 		Point viewPoint = Point(centerOfView) - Point(actualPosition);
-		container->runAction(MoveTo::create(0.5f, Vec2(viewPoint.x, viewPoint.y)));
+		container->runAction(MoveTo::create(0.5f, Vec2(viewPoint.x, viewPoint.y)));*/
 		deltaTime = 0;
 	}
 
 }
 
+//When you tap the screen nothing happens
 
 bool CombatScene::onTouchBegan(Touch *touch, Event *event)
 {
 	return true;
 }
 
+//When you release the tap from the screen then the game goes in pause. Tap again to continue the execution.
 
 void CombatScene::onTouchEnded(Touch *touch, Event *event)
 {
@@ -165,6 +166,8 @@ void CombatScene::onTouchEnded(Touch *touch, Event *event)
 	return;
 }
 
+//Method which return the coordinates in TILE from the ones in POINT
+
 Point CombatScene::tileCoordForPosition(Point position)
 {
 	int x = position.x / TILE_WIDTH;
@@ -172,12 +175,7 @@ Point CombatScene::tileCoordForPosition(Point position)
 	return Point(x, y);
 }
 
-Point CombatScene::positionCoordForTile(Point position)
-{
-	int x = position.x * TILE_WIDTH;
-	int y = ARENA_SIZE_HEIGHT - position.y * TILE_HEIGHT;
-	return Point(x, y);
-}
+//Dynamic allocation of memory to instanziate the Arena and define the the type for all blocks
 
 void CombatScene::createMap() {
 
@@ -206,34 +204,7 @@ void CombatScene::createMap() {
 	}
 }
 
-int** CombatScene::getMap() {
-	return mat;
-}
-
-TMXTiledMap* CombatScene::getTileMap() {
-	return this->tile;
-}
-
-Player* CombatScene::getPlayer() {
-	return this->_player;
-}
-
-Enemy* CombatScene::getEnemy() {
-	return this->_enemy;
-}
-
-void CombatScene::finishBattle() {
-	GameManager::getInstance()->resumeExploration(_player);
-}
-
-void CombatScene::setHud(HudLayer* hud) {
-	this->hud = hud;
-}
-
-HudLayer* CombatScene::getHud() {
-	return this->hud;
-}
-
+//Method to place the correct Enemy based on its EnemyType
 
 void CombatScene::setEnemy(EnemyType type) {
 	switch (type) {
@@ -302,4 +273,34 @@ void CombatScene::setEnemy(EnemyType type) {
 		_enemy->scheduleUpdate();
 		break;
 	}
+}
+
+//Getters & Setters
+
+int** CombatScene::getMap() {
+	return mat;
+}
+
+TMXTiledMap* CombatScene::getTileMap() {
+	return this->tile;
+}
+
+Player* CombatScene::getPlayer() {
+	return this->_player;
+}
+
+Enemy* CombatScene::getEnemy() {
+	return this->_enemy;
+}
+
+void CombatScene::finishBattle() {
+	GameManager::getInstance()->resumeExploration(_player);
+}
+
+void CombatScene::setHud(HudLayer* hud) {
+	this->hud = hud;
+}
+
+HudLayer* CombatScene::getHud() {
+	return this->hud;
 }

@@ -23,6 +23,8 @@ public:
 	void loseGame();
 	void endGame();
 	void restartGame();
+	void viewHighScore();
+	void changeSettings();
 
 
 protected:

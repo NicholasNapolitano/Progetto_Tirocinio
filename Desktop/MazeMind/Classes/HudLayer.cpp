@@ -5,6 +5,8 @@
 
 USING_NS_CC;
 
+//Constructor
+
 HudLayer::HudLayer(){
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
@@ -74,10 +76,22 @@ HudLayer::HudLayer(){
 	this->scheduleUpdate();
 }
 
+//Destructor
+
 HudLayer::~HudLayer() {
 
 }
 
+//Method which schedules the Layer every frame
+
+void HudLayer::update(float dt) {
+
+	__String *tempScore = __String::createWithFormat("%d", scorePoints);
+	points->setString(tempScore->getCString());
+}
+
+
+//Getter & Setter
 
 void HudLayer::setScore(int scorePoints) {
 	this->scorePoints = scorePoints;
@@ -85,10 +99,4 @@ void HudLayer::setScore(int scorePoints) {
 
 int HudLayer::getScore() {
 	return this->scorePoints;
-}
-
-void HudLayer::update(float dt) {
-
-	__String *tempScore = __String::createWithFormat("%d", scorePoints);
-	points->setString(tempScore->getCString());
 }

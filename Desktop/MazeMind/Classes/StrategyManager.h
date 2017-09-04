@@ -31,7 +31,6 @@ private:
 	static StrategyManager* instance;
 
 
-
 };
 
 #endif //__STRATEGY_MANAGER_H__

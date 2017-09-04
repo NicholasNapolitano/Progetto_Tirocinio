@@ -5,10 +5,16 @@
 
 USING_NS_CC;
 
+//Singleton instance of the class
+
 StrategyManager* StrategyManager::instance = 0;
+
+//Constructor
 
 StrategyManager::StrategyManager() {
 }
+
+//Return the instance of the class
 
 StrategyManager* StrategyManager::getInstance()
 {
@@ -16,6 +22,8 @@ StrategyManager* StrategyManager::getInstance()
 		instance = new StrategyManager;
 	return instance;
 }
+
+//Defensive Strategy (on the CombatScene)
 
 void StrategyManager::defensiveAsset(Player* player) {
 	if (player->getTarget() != NULL) {
@@ -48,6 +56,8 @@ void StrategyManager::defensiveAsset(Player* player) {
 	}
 }
 
+//    ----- DEFEAT ENEMY STRATEGY -----
+
 void StrategyManager::defeatEnemy(Player* player) {
 	if (player->getTarget() != NULL) {
 		player->lookingAround();
@@ -79,6 +89,8 @@ void StrategyManager::defeatEnemy(Player* player) {
 		return;
 	}
 }
+
+//    ----- DISTANCE ATTACK STRATEGY -----
 
 void StrategyManager::distanceAttack(Player* player) {
 	if (player->getTarget() != NULL) {
@@ -116,6 +128,8 @@ void StrategyManager::distanceAttack(Player* player) {
 	}
 }
 
+//    ----- RETREAT STRATEGY -----
+
 void StrategyManager::retreat(Player* player) {
 	auto meta = Point(159, 159);
 	if (player->getTarget() != NULL) {
@@ -147,6 +161,8 @@ void StrategyManager::retreat(Player* player) {
 		}
 	}
 }
+
+//    ----- BE PATIENT STRATEGY -----
 
 void StrategyManager::be_Patient(Player* player) {
 	if (player->getTarget() != NULL) {
@@ -201,6 +217,8 @@ void StrategyManager::be_Patient(Player* player) {
 	}
 }
 
+//    ----- STUN ENEMY STRATEGY -----
+
 void StrategyManager::stun_Enemy(Player* player) {
 	if (player->getTarget() != NULL) {
 		player->lookingAround();
@@ -236,6 +254,8 @@ void StrategyManager::stun_Enemy(Player* player) {
 		}
 	}
 }
+
+//    ----- SENTRY BEHAVIOUR -----
 
 void StrategyManager::sentryBehaviour(Enemy* enemy) {
 	if (enemy->getActualScene() == EXPLORATION) {
@@ -307,13 +327,13 @@ void StrategyManager::sentryBehaviour(Enemy* enemy) {
 			auto meta = Point(6, 6);
 			if (enemy->getTarget() != NULL) {
 				auto diff2 = enemy->getTarget()->getPosition() - enemy->getPosition();
-				/*if (((abs(diff2.x) <= 50 || abs(diff2.y) <= 50) && (this->actualWeapon == GUN))) {
-				this->setState(ATTACKING);
-				startAttacking();
-				deltaTime = 0;
+				if (((abs(diff2.x) <= 50 || abs(diff2.y) <= 50) && (enemy->getActualWeapon() == GUN))) {
+				enemy->setState(ATTACKING);
+				enemy->startAttacking();
+				enemy->setDeltaTime(0);
 				return;
 				}
-				else {*/
+				else {
 				enemy->setState(MOVING);
 				auto road = meta - enemy->getPosition();
 				if (abs(road.x) > abs(road.y)) {
@@ -335,8 +355,8 @@ void StrategyManager::sentryBehaviour(Enemy* enemy) {
 				enemy->setDeltaTime(0);
 				return;
 			}
+		  }
 		}
-		//}
 		auto diff = enemy->getTarget()->getPosition() - enemy->getPosition();
 		if (((abs(diff.x) < 100 || abs(diff.x) < 100) && enemy->getActualWeapon() == RIFLE) || ((abs(diff.x) < 50 || abs(diff.x) < 50) && enemy->getActualWeapon() == GUN)){
 			enemy->setState(ATTACKING);
@@ -367,6 +387,8 @@ void StrategyManager::sentryBehaviour(Enemy* enemy) {
 	}
 
 }
+
+//    ----- KAMIKAZE BEHAVIOUR -----
 
 void StrategyManager::kamikazeBehaviour(Enemy* enemy) {
 	if (enemy->getActualScene() == EXPLORATION) {
@@ -421,9 +443,14 @@ void StrategyManager::kamikazeBehaviour(Enemy* enemy) {
 		enemy->setDeltaTime(0);
 	}
 	else if (enemy->getActualScene() == FIGHT) {
+		auto dist1 = enemy->getTarget()->getPosition() - enemy->getPosition();
+		if (abs(dist1.x) <= 20 || abs(dist1.y) <= 20) {
+			enemy->setState(ATTACKING);
+			enemy->boom();
+			return;
+		}
 		enemy->lookingAround();
 		enemy->setState(MOVING);
-		auto dist1 = enemy->getTarget()->getPosition() - enemy->getPosition();
 		if (abs(dist1.x) > abs(dist1.y)) {
 			if (dist1.x > 0) {
 				enemy->controlRight();
@@ -446,6 +473,8 @@ void StrategyManager::kamikazeBehaviour(Enemy* enemy) {
 
 }
 
+//    ----- TOWER BEHAVIOUR -----
+
 void StrategyManager::towerBehaviour(Enemy* enemy) {
 	if (enemy->getActualScene() == EXPLORATION) {
 		//doNothing
@@ -462,6 +491,8 @@ void StrategyManager::towerBehaviour(Enemy* enemy) {
 			return;
 		}
 }
+
+//    ----- SCOUT BEHAVIOUR -----
 
 void StrategyManager::scoutBehaviour(Enemy* enemy) {
 	if (enemy->getActualScene() == EXPLORATION) {

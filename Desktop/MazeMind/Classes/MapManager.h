@@ -28,6 +28,7 @@ class HudLayer;
 class StrategyMenu;
 class Player;
 class Enemy;
+class Item;
 
 class MapManager : public cocos2d::Layer
 {
@@ -40,7 +41,6 @@ public:
 
 
 	Point tileCoordForPosition(cocos2d::Point position);
-	Point positionCoordForTile(cocos2d::Point position);
 
 	void beginBattle(Enemy* enemy);
 	void createMapI();
@@ -56,11 +56,13 @@ public:
 	Player* getPlayer();
 	HudLayer* getHud();
 	void setHud(HudLayer* hud);
+	void createMap();
+	void positionEnemies();
+	void positionObjects();
 
 
 private:
 	Player* _player;
-	Enemy* _enemy;
 	cocos2d::TMXTiledMap* tile;
 	cocos2d::TMXLayer* layer;
 	int** mat;
@@ -69,6 +71,8 @@ private:
 	Node* container;
 	GameManager* core;
 	StrategyMenu* strategy;
+	Item* objects[5];
+	Enemy* enemies[4];
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(MapManager);

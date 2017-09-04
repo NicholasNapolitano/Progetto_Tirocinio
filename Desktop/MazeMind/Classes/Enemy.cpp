@@ -12,6 +12,8 @@
 
 USING_NS_CC;
 
+//Method which create an Enemy based on a image file stored in the "Resources" Directory of the project
+
 Enemy* Enemy::create(const std::string& filename)
 {
 	Enemy *enemy = new (std::nothrow) Enemy();
@@ -33,6 +35,7 @@ Enemy* Enemy::create(const std::string& filename)
 	return nullptr;
 }
 
+//Method to set the State of an Enemy to discriminate its behaviour
 
 void Enemy::setState(State state)
 {
@@ -49,6 +52,8 @@ void Enemy::setState(State state)
 		break;
 	}
 }
+
+//Method to set the MovingState of an Enemy to discriminate its movement on the current Scene
 
 void Enemy::setMovingState(Moving state)
 {
@@ -73,36 +78,7 @@ void Enemy::setMovingState(Moving state)
 	else return;
 }
 
-const State Enemy::getState() const
-{
-	return _state;
-}
-
-const char* Enemy::getStateName() const
-{
-	return typeid(_state).name();
-}
-
-
-void Enemy::setFirstDestination(Point first)
-{
-	this->FDestination = first;
-}
-
-void Enemy::setSecondDestination(Point second)
-{
-	this->SDestination = second;
-}
-
-Point Enemy::getFirstDestination()
-{
-	return this->FDestination;
-}
-
-Point Enemy::getSecondDestination()
-{
-	return this->SDestination;
-}
+//Method to schedule the Enemy every frame and control its behaviour
 
 void Enemy::update(float dt)
 {
@@ -166,7 +142,7 @@ void Enemy::update(float dt)
 	}
 }
 
-
+//Methods used to move the Enemy 
 
 void Enemy::startGoingUp() {
 	auto position = this->getPosition();
@@ -205,6 +181,7 @@ void Enemy::startGoingRight() {
 	return;
 }
 
+//Methods to control the blocks placed next to the Enemy (The cardinal blocks)
 
 bool Enemy::beCarefulLeft(Point position) {
 	if (this->getActualScene() == EXPLORATION) {
@@ -243,7 +220,6 @@ bool Enemy::beCarefulRight(Point position) {
 }
 
 bool Enemy::beCarefulUp(Point position) {
-	//auto mappa = mapGame->getMap();
 
 	if (this->getActualScene() == EXPLORATION) {
 		auto tileCoordUp = mapGame->tileCoordForPosition(Point(position.x, position.y + TILE_HEIGHT));
@@ -263,7 +239,6 @@ bool Enemy::beCarefulUp(Point position) {
 }
 
 bool Enemy::beCarefulDown(Point position) {
-	//auto mappa = mapGame->getMap();
 
 	if (this->getActualScene() == EXPLORATION) {
 		auto tileCoordDown = mapGame->tileCoordForPosition(Point(position.x, position.y - TILE_HEIGHT));
@@ -281,6 +256,9 @@ bool Enemy::beCarefulDown(Point position) {
 
 	return true;
 }
+
+//Method to control the blocks placed next to the Enemy (The diagonal blocks)
+//Not used in this iteration
 
 bool Enemy::beCarefulLeftUp(Point position) {
 	auto tileCoordLeftUp = mapGame->tileCoordForPosition(Point(position.x - TILE_WIDTH, position.y + TILE_HEIGHT));
@@ -325,6 +303,8 @@ bool Enemy::beCarefulRightDown(Point position) {
 	return true;
 }
 
+//Method to control the block reached by the Enemy
+
 void Enemy::controlPosition(Point position) {
 	auto tileCoord = mapGame->tileCoordForPosition(position);
 
@@ -359,6 +339,8 @@ void Enemy::controlPosition(Point position) {
 	}
 }
 
+//Method to memorize the blocks where the Enemy can go on
+
 void Enemy::lookingAround() {
 	auto pos = this->getPosition();
 
@@ -391,39 +373,7 @@ void Enemy::lookingAround() {
 	}
 }
 
-void Enemy::bestChoise() {
-	auto position = this->getPosition();
-	auto target = this->getDestination();
-	auto coord = mapGame->tileCoordForPosition(position);
-	int X = (int)coord.x;
-	int Y = (int)coord.y;
-	auto dist = target - position;
-	if (dist.x >= 0) {
-		if (neighbours[1] != Point(0, 0)) {
-			this->setMovingState(MOVE_RIGHT);
-			return;
-		}
-	}
-	if (dist.x < 0) {
-		if (neighbours[2] != Point(0, 0)) {
-			this->setMovingState(MOVE_LEFT);
-			return;
-		}
-	}
-
-	if (dist.y >= 0) {
-		if (neighbours[0] != Point(0, 0)) {
-			this->setMovingState(MOVE_UP);
-			return;
-		}
-	}
-	if (dist.y < 0) {
-		if (neighbours[3] != Point(0, 0)) {
-			this->setMovingState(MOVE_DOWN);
-			return;
-		}
-	}
-}
+//Methods to control the positions next to the Enemy and if it can go on, then it will move there
 
 void Enemy::controlLeft() {
 	if (neighbours[2] != Point(0, 0)) {
@@ -453,20 +403,7 @@ void Enemy::controlDown() {
 	}
 }
 
-
-
-void Enemy::setMapGame(MapManager* pMap) {
-	mapGame = pMap;
-}
-
-void Enemy::setMappa(int** map) {
-	mappa = map;
-
-}
-
-void Enemy::setPreviousState(State state) {
-	previousState = state;
-}
+//Method which create the current bullet based on the current Weapon
 
 void Enemy::startAttacking() {
 	auto w = this->actualWeapon;
@@ -530,14 +467,7 @@ void Enemy::startAttacking() {
 	projectile->scheduleUpdate();
 }
 
-
-void Enemy::setTarget(Player* player) {
-	this->target = player;
-}
-
-void Enemy::setTileMap(TMXTiledMap* tile) {
-	this->tile = tile;
-}
+//Method that describes the damage received based on the Player's Weapon and its power
 
 void Enemy::hurt() {
 
@@ -611,6 +541,8 @@ void Enemy::hurt() {
 	}
 }
 
+//Method applicable only for a Kamikaze Enemy and describes the event of its death: it explodes and does damage over a certain area
+
 void Enemy::boom() {
 	SoundManager::getInstance()->startGrenadeSound();
 	booom = Sprite::create("KamikazeExplosion.png");
@@ -626,6 +558,9 @@ void Enemy::boom() {
 	}
 	return;
 }
+
+//Getters & Setters
+
 
 void Enemy::setCombatScene(CombatScene* arena) {
 	this->arena = arena;
@@ -713,4 +648,56 @@ float Enemy::getLife() {
 
 float Enemy::getTotalTime() {
 	return this->totalTime;
+}
+
+const State Enemy::getState() const
+{
+	return _state;
+}
+
+const char* Enemy::getStateName() const
+{
+	return typeid(_state).name();
+}
+
+
+void Enemy::setFirstDestination(Point first)
+{
+	this->FDestination = first;
+}
+
+void Enemy::setSecondDestination(Point second)
+{
+	this->SDestination = second;
+}
+
+Point Enemy::getFirstDestination()
+{
+	return this->FDestination;
+}
+
+Point Enemy::getSecondDestination()
+{
+	return this->SDestination;
+}
+
+void Enemy::setTarget(Player* player) {
+	this->target = player;
+}
+
+void Enemy::setTileMap(TMXTiledMap* tile) {
+	this->tile = tile;
+}
+
+void Enemy::setMapGame(MapManager* pMap) {
+	mapGame = pMap;
+}
+
+void Enemy::setMappa(int** map) {
+	mappa = map;
+
+}
+
+void Enemy::setPreviousState(State state) {
+	this->previousState = state;
 }
