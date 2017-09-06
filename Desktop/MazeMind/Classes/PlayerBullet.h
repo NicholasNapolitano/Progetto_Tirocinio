@@ -19,6 +19,7 @@ public:
 	void setCombatScene(CombatScene* scene);
 
 	void setTargetEnemy(Enemy* enemy);
+	Enemy* getTargetEnemy();
 	void hitEnemy();
 
 	const State getState() const;

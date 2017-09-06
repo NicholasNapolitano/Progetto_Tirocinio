@@ -87,7 +87,7 @@ void Player::update(float dt)
 	deltaTime += dt;
 	totalTime += dt;
 	
-
+	auto scaleFact = Director::getInstance()->getContentScaleFactor();
 	if (this->life <= 0) {
 		this->runAction(FadeOut::create(1.0f));
 		GameManager::getInstance()->loseGame();
@@ -327,6 +327,7 @@ void Player::controlPosition(Point position) {
 
 	if (mappa[(int)tileCoord.x][(int)tileCoord.y] == GOAL) {
 		log("YOU WIN!");
+		core->setExtraScore(this);
 		auto scene = HighScoreScene::createScene(this->getMapGame()->getHud()->getScore());
 		this->unscheduleUpdate();
 		this->runAction(FadeOut::create(1.0f));
@@ -509,17 +510,16 @@ int Player::solve2(int x, int y) {
 //Method which creates the minimum trip from the Start to the Goal
 
 void Player::createRoad() {
-
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	queueNode q = parents.back();
 	Point p = q.pt;
 	route.push_front(p);
 	help = q.parent;
-	while (help->pt != Point(32, 32)) {
+	while (help->pt != Point(origin.x + 32, origin.y + 32)) {
 		route.push_front(help->pt);
 		help = help->parent;
 	}
 
-	route.push_front(help->pt);
 }
 
 //Method which verifies if a node p is contained in the "parents" list
@@ -732,6 +732,7 @@ void Player::startAttacking() {
 		}
 	}
 	if (projectile != nullptr) {
+		projectile->setScale(this->getMapFight()->getLayer()->getTileAt(Vec2(0, 0))->getScale());
 		projectile->setCombatScene(arena);
 		projectile->setTargetEnemy(this->target);
 		projectile->setWeapon(w);
@@ -753,6 +754,20 @@ void Player::gotcha(Item* item) {
 	}
 	if (item->getType() == DEFENSE_UP) {
 		this->defense = this->getDefense() + 1;
+	}
+	if (item->getType() == CHEST) {
+		auto prize = RandomHelper::random_int(0, 2);
+		switch (prize) {
+		case 0:		
+			this->setLife(3.0f);
+			break;
+		case 1:
+		    this->power = this->getPower() + 1;
+			break;
+		case 2:
+			this->defense = this->getDefense() + 1;
+			break;
+		}
 	}
 
 	this->getMapGame()->getHud()->setScore(this->getMapGame()->getHud()->getScore() + 100);

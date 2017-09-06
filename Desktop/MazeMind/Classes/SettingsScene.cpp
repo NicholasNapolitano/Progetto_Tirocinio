@@ -30,7 +30,7 @@ bool SettingsScene::init()
 	{
 		return false;
 	}
-
+	float scaleFactor = Director::getInstance()->getContentScaleFactor();
 	this->core = GameManager::getInstance();
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -75,8 +75,9 @@ bool SettingsScene::init()
 	auto menu_item_1 = MenuItemFont::create("Menu", CC_CALLBACK_1(SettingsScene::back, this));
 
 
-	menu_item_1->setPosition(Point(origin.x + menu_item_1->getContentSize().width, origin.y + visibleSize.height - menu_item_1->getContentSize().height));
-
+	menu_item_1->setPosition(Point(origin.x, origin.y + visibleSize.height));
+	menu_item_1->setAnchorPoint(Point(0, 1));
+	menu_item_1->setFontSizeObj(menu_item_1->getFontSizeObj() / scaleFactor);
 
 	auto menu = Menu::create(menu_item_1, closeItem, NULL);
 	menu->setPosition(Point(0, 0));
@@ -115,6 +116,7 @@ bool SettingsScene::init()
 
 void SettingsScene::sliderEvent1(Ref* pSender, ui::Slider::EventType type) 
 {
+	float scaleFactor = Director::getInstance()->getContentScaleFactor();
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	if (type == ui::Slider::EventType::ON_PERCENTAGE_CHANGED)
 	{   
@@ -125,7 +127,8 @@ void SettingsScene::sliderEvent1(Ref* pSender, ui::Slider::EventType type)
 		int percent = volumeSlider->getPercent();
 		__String *tempVolume = __String::createWithFormat("Music Volume : %d", percent);
 		musicVolume = Label::createWithTTF(tempVolume->getCString(), "fonts/Marker Felt.ttf", 32);
-		musicVolume->setPosition((Vec2(visibleSize.width / 2.0f, visibleSize.height / 1.2f)));
+		musicVolume->setPosition((Vec2(visibleSize.width / 2.0f, visibleSize.height / 1.35f)));
+		musicVolume->setScale(musicVolume->getScale() / scaleFactor);
 		this->addChild(musicVolume);
 		if (percent*0.01 != music) {
 			music = percent*0.01;
@@ -142,6 +145,7 @@ void SettingsScene::sliderEvent1(Ref* pSender, ui::Slider::EventType type)
 
 void SettingsScene::sliderEvent2(Ref* pSender, ui::Slider::EventType type)
 {
+	float scaleFactor = Director::getInstance()->getContentScaleFactor();
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	if (type == ui::Slider::EventType::ON_PERCENTAGE_CHANGED)
 	{
@@ -152,7 +156,8 @@ void SettingsScene::sliderEvent2(Ref* pSender, ui::Slider::EventType type)
 		int percent2 = effectsSlider->getPercent();
 		__String *tempeffects = __String::createWithFormat("Sound Effects Volume : %d", percent2);
 		effectsVolume = Label::createWithTTF(tempeffects->getCString(), "fonts/Marker Felt.ttf", 32);
-		effectsVolume->setPosition((Vec2(visibleSize.width / 2.0f, visibleSize.height / 2.6f)));
+		effectsVolume->setPosition((Vec2(visibleSize.width / 2.0f, visibleSize.height / 2.45f)));
+		effectsVolume->setScale(effectsVolume->getScale() / scaleFactor);
 		this->addChild(effectsVolume);
 		if (percent2*0.01 != effects) {
 			effects = percent2*0.01;

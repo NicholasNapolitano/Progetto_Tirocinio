@@ -9,6 +9,7 @@
 #include "HudLayer.h"
 #include "HighScoreScene.h"
 #include "SettingsScene.h"
+#include "PresentationScene.h"
 #include <typeinfo>
 
 USING_NS_CC;
@@ -157,4 +158,35 @@ void GameManager::viewHighScore() {
 void GameManager::changeSettings() {
 	auto scene = SettingsScene::createScene();
 	Director::getInstance()->pushScene(TransitionFlipY::create(1.0f, scene));
+}
+
+void GameManager::setExtraScore(Player* player) {
+
+	Protection protect = player->getActualProtection();
+
+	if (protect == ANYTHING) {
+		player->getMapGame()->getHud()->setScore(player->getMapGame()->getHud()->getScore() + 150);
+	}
+		    
+	Weapon weapon = player->getActualWeapon();
+
+	if (weapon == NO_ONE) {
+		player->getMapGame()->getHud()->setScore(player->getMapGame()->getHud()->getScore() + 300);
+	}
+
+	int life = player->getLife();
+	player->getMapGame()->getHud()->setScore(player->getMapGame()->getHud()->getScore() + 50 * life);
+
+	Crawling strategy = player->getCrawlingStrategy();
+	
+	if (strategy == NORMAL) {
+		player->getMapGame()->getHud()->setScore(player->getMapGame()->getHud()->getScore() + 500);
+	}
+
+	return;
+}
+
+void GameManager::startPresentation() {
+	auto scene = PresentationScene::create();
+	Director::getInstance()->pushScene(scene);
 }

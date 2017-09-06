@@ -14,8 +14,9 @@ public:
 	static cocos2d::Scene* createScene();
 
 	virtual bool init();
+	void menu(Ref *pSender);
 	void setMapManager(MapManager* manager);
-	void enterTheGame(Ref *pSender);
+	void enjoyTheGame(Ref *pSender);
 	void gun(Ref *pSender);
 	void rifle(Ref *pSender);
 	void sniper(Ref *pSender);

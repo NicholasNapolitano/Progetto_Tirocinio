@@ -81,6 +81,7 @@ bool CombatScene::init()
 	}
 
 	_player = Player::create("Player.png");
+	_player->setScale(25 / layer->getTileAt(Vec2(0, 0))->getContentSize().width);
 	_player->setCombatScene(this);
 	_player->setMappa(this->getMap());
 	_player->setTileMap(this->getTileMap());
@@ -102,10 +103,8 @@ bool CombatScene::init()
 
 	dispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 
-	log("WELCOME IN MY GAME. YOU HAVE TO REACH THE GOAL (THE STAIRS) TO WIN IT. GOOD LUCK!");
+	this->resizeMap();
 
-	container->setScaleX(2.6 * Director::getInstance()->getContentScaleFactor());
-	container->setScaleY(2.6 * Director::getInstance()->getContentScaleFactor());
 
 	this->scheduleUpdate();
 
@@ -129,7 +128,7 @@ void CombatScene::update(float dt)
 
 		hud->setScore(hud->getScore() - 1);
 
-	/*	Point position = _player->getPosition();
+		Point position = _player->getPosition();
 
 		Size winSize = Director::getInstance()->getWinSize();
 
@@ -141,7 +140,7 @@ void CombatScene::update(float dt)
 
 		Point centerOfView = Point(winSize.width / 2, winSize.height / 2);
 		Point viewPoint = Point(centerOfView) - Point(actualPosition);
-		container->runAction(MoveTo::create(0.5f, Vec2(viewPoint.x, viewPoint.y)));*/
+		container->runAction(MoveTo::create(0.5f, Vec2(viewPoint.x, viewPoint.y)));
 		deltaTime = 0;
 	}
 
@@ -204,12 +203,27 @@ void CombatScene::createMap() {
 	}
 }
 
+//Method which adaptes the Map according to device's screen resolution
+
+void CombatScene::resizeMap() {
+
+	for (int i = 0; i < ARENA_WIDTH; i++) {
+		for (int j = 0; j < ARENA_HEIGHT; j++) {
+			auto tiles = layer->getTileAt(Vec2(j, i));
+			tiles->setScale(25 / tiles->getContentSize().width);
+			tiles->setPosition(Vec2(Director::getInstance()->getVisibleOrigin().x + 25 * j, -25 + Director::getInstance()->getVisibleOrigin().y + ARENA_SIZE_HEIGHT - 25 * i));
+		}
+	}
+
+}
+
 //Method to place the correct Enemy based on its EnemyType
 
 void CombatScene::setEnemy(EnemyType type) {
 	switch (type) {
 	case SENTRY:
 		_enemy = Enemy::create("Sentry.png");
+		_enemy->setScale(layer->getTileAt(Vec2(0, 0))->getScale());
 		_enemy->setCombatScene(this);
 		_enemy->setMappa(this->getMap());
 		_enemy->setTileMap(this->getTileMap());
@@ -227,6 +241,7 @@ void CombatScene::setEnemy(EnemyType type) {
 		break;
 	case KAMIKAZE:
 		_enemy = Enemy::create("Kamikaze.png");
+		_enemy->setScale(layer->getTileAt(Vec2(0, 0))->getScale());
 		_enemy->setCombatScene(this);
 		_enemy->setMappa(this->getMap());
 		_enemy->setTileMap(this->getTileMap());
@@ -243,6 +258,7 @@ void CombatScene::setEnemy(EnemyType type) {
 		break;
 	case TOWER:
 		_enemy = Enemy::create("Tower.png");
+		_enemy->setScale(layer->getTileAt(Vec2(0, 0))->getScale());
 		_enemy->setCombatScene(this);
 		_enemy->setMappa(this->getMap());
 		_enemy->setTileMap(this->getTileMap());
@@ -259,6 +275,7 @@ void CombatScene::setEnemy(EnemyType type) {
 		break;
 	case SCOUT:
 		_enemy = Enemy::create("Scout.png");
+		_enemy->setScale(layer->getTileAt(Vec2(0, 0))->getScale());
 		_enemy->setCombatScene(this);
 		_enemy->setMappa(this->getMap());
 		_enemy->setTileMap(this->getTileMap());
@@ -303,4 +320,8 @@ void CombatScene::setHud(HudLayer* hud) {
 
 HudLayer* CombatScene::getHud() {
 	return this->hud;
+}
+
+cocos2d::TMXLayer* CombatScene::getLayer() {
+	return this->layer;
 }

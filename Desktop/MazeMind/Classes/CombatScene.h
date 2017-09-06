@@ -47,11 +47,13 @@ public:
 	HudLayer* getHud();
 
 	void createMap();
+	void resizeMap();
 	int** getMap();
 	TMXTiledMap* getTileMap();
 	Player* getPlayer();
 	Enemy* getEnemy();
 	void setEnemy(EnemyType type);
+	cocos2d::TMXLayer* getLayer();
 
 	void finishBattle();
 

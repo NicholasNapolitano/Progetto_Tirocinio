@@ -459,6 +459,7 @@ void Enemy::startAttacking() {
 			return;
 		}
 	}
+	projectile->setScale(this->getMapFight()->getLayer()->getTileAt(Vec2(0, 0))->getScale());
 	projectile->setPosition(this->getPosition());
 	projectile->setTargetPlayer(this->target);
 	projectile->setWeapon(w);
@@ -546,6 +547,7 @@ void Enemy::hurt() {
 void Enemy::boom() {
 	SoundManager::getInstance()->startGrenadeSound();
 	booom = Sprite::create("KamikazeExplosion.png");
+	booom->setScale(this->getMapFight()->getLayer()->getTileAt(Vec2(0, 0))->getScale());
 	booom->setPosition(this->getPosition());
 	tile->addChild(booom, 5);
 	if (booom->getBoundingBox().intersectsRect(this->getTarget()->getBoundingBox())) {

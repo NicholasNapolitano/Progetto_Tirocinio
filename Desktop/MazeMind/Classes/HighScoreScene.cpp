@@ -33,7 +33,7 @@ bool HighScoreScene::init()
 	{
 		return false;
 	}
-
+	float scaleFactor = Director::getInstance()->getContentScaleFactor();
 	this->core = GameManager::getInstance();
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -78,8 +78,9 @@ bool HighScoreScene::init()
 	auto menu_item_1 = MenuItemFont::create("Menu", CC_CALLBACK_1(HighScoreScene::back, this));
 
 
-	menu_item_1->setPosition(Point(origin.x + menu_item_1->getContentSize().width, origin.y + visibleSize.height - menu_item_1->getContentSize().height));
-
+	menu_item_1->setPosition(Point(origin.x, origin.y + visibleSize.height));
+	menu_item_1->setAnchorPoint(Point(0, 1));
+	menu_item_1->setFontSizeObj(menu_item_1->getFontSizeObj() / scaleFactor);
 	auto menu = Menu::create(menu_item_1, closeItem, NULL);
 	menu->setPosition(Point(0, 0));
 	this->addChild(menu, 1);
@@ -104,6 +105,7 @@ bool HighScoreScene::init()
 	auto highScoreLabel = LabelTTF::create(tempHighScore->getCString(), "fonts/Marker Felt.ttf", 32);
 	highScoreLabel->setPosition(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2);
 	highScoreLabel->setColor(Color3B::YELLOW);
+	highScoreLabel->setScale(highScoreLabel->getScale() / scaleFactor);
 	this->addChild(highScoreLabel);
 
 	return true;

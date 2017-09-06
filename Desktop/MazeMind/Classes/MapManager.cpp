@@ -33,7 +33,7 @@ bool MapManager::init()
 	{
 		return false;
 	}
-
+	float scaleFactor = Director::getInstance()->getContentScaleFactor();
 	this->core = GameManager::getInstance();
 	this->deltaTime = 0;
 	this->createMap();
@@ -77,7 +77,11 @@ bool MapManager::init()
 		}
 	}
 
+	
+	log("TILEMAP SIZE: %d", tile->getContentSize());
+
 	_player = Player::create("Player.png");
+	_player->setScale(25 / layer->getTileAt(Vec2(0,0))->getContentSize().width);
 	_player->setMapGame(this);
 	_player->setMappa(this->getMap());
 	_player->setState(IDLE);
@@ -94,6 +98,8 @@ bool MapManager::init()
 	this->addChild(hud, 15);
 	hud->setScore(1000);
 
+	this->resizeMap();
+	tile->setPosition(Vec2(origin.x, origin.y));
 	// Register Touch Event
 	auto dispatcher = Director::getInstance()->getEventDispatcher();
 	auto listener = EventListenerTouchOneByOne::create();
@@ -110,9 +116,6 @@ bool MapManager::init()
 	
 	_player->setMatrix2();
 	_player->solve2((int)_player->getPosition().x, (int)_player->getPosition().y);
-
-	
-	container->setScale(Director::getInstance()->getContentScaleFactor());
 	
 	this->scheduleUpdate();
 	_player->scheduleUpdate();
@@ -142,17 +145,17 @@ void MapManager::update(float dt)
 
 		Point position = _player->getPosition();
 
-		Size winSize = Director::getInstance()->getWinSize();
+	    Size winSize = Director::getInstance()->getWinSize();
 
-		int x = MAX(position.x, winSize.width / (2 * scaleFact));
-		int y = MAX(position.y, winSize.height / (2 * scaleFact));
-		x = MIN(x, (MAP_SIZE_WIDTH)-winSize.width / (2 * scaleFact));
-		y = MIN(y, (MAP_SIZE_HEIGHT)-winSize.height / (2 * scaleFact));
+		int x = MAX(position.x, winSize.width / 2);
+		int y = MAX(position.y, winSize.height / 2);
+		x = MIN(x, (MAP_SIZE_WIDTH)-winSize.width / 2);
+		y = MIN(y, (MAP_SIZE_HEIGHT)-winSize.height / 2);
 		Point actualPosition = Point(x, y);
 
-		Point centerOfView = Point(winSize.width / (2 * scaleFact), winSize.height / (2 * scaleFact));
+		Point centerOfView = Point(winSize.width / 2, winSize.height / 2);
 		Point viewPoint = Point(centerOfView) - Point(actualPosition);
-		container->runAction(MoveTo::create(0.499f, Vec2(viewPoint.x * scaleFact, viewPoint.y * scaleFact)));
+		container->runAction(MoveTo::create(0.499f, Vec2(viewPoint.x, viewPoint.y)));
 		deltaTime = 0;
 	}
 
@@ -342,21 +345,21 @@ void MapManager::createMapIII() {
 		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, random1, random1, random1, random1, random1, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, WALL },
 		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, random1, random1, random1, random1, random1, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, WALL },
 		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, WALL },
-		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, random3, GROUND, random3, random3, random3, random3, random3, random3, random3, random3, random3, random3, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, WALL },
-		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, random3, GROUND, random3, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, random3, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, WALL },
-		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, random3, GROUND, random3, GROUND, random3, random3, random3, random3, random3, random3, GROUND, random3, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, WALL },
-		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, random3, GROUND, random3, GROUND, random3, GROUND, GROUND, GROUND, GROUND, random3, GROUND, random3, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, WALL },
-		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, random3, GROUND, random3, GROUND, random3, GROUND, random3, random3, GROUND, random3, GROUND, random3, GROUND, GROUND, GROUND, GROUND, GRASS, GRASS, GRASS, GRASS, GRASS, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, random2, GROUND, GROUND, GROUND, GROUND, WALL },
-		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, random3, GROUND, random3, GROUND, random3, GROUND, random3, random3, GROUND, random3, GROUND, random3, GROUND, GROUND, GROUND, GROUND, GRASS, GRASS, GRASS, GRASS, GRASS, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, random2, GROUND, GROUND, GROUND, GROUND, WALL },
-		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, random3, GROUND, random3, GROUND, random3, GROUND, random3, random3, GROUND, random3, GROUND, random3, GROUND, GROUND, GROUND, GROUND, GRASS, GRASS, GRASS, GRASS, GRASS, GROUND, GROUND, GROUND, random2, GROUND, GROUND, GROUND, random2, GROUND, GROUND, random2, GROUND, WALL },
-		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, random3, GROUND, random3, GROUND, random3, GROUND, random3, random3, GROUND, random3, GROUND, random3, GROUND, GROUND, GROUND, GROUND, GRASS, GRASS, GRASS, GRASS, GRASS, GROUND, GROUND, GROUND, GROUND, random2, GROUND, GROUND, random2, GROUND, random2, GROUND, GROUND, WALL },
-		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, random3, GROUND, random3, GROUND, random3, GROUND, random3, random3, GROUND, random3, GROUND, random3, GROUND, GROUND, GROUND, GROUND, GRASS, GRASS, GRASS, GRASS, GRASS, GROUND, GROUND, GROUND, GROUND, GROUND, random2, random2, random2, random2, random2, GROUND, GROUND, WALL },
-		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, random3, GROUND, random3, GROUND, random3, GROUND, GROUND, random3, GROUND, random3, GROUND, random3, GROUND, GROUND, GROUND, GROUND, GRASS, GRASS, GRASS, GRASS, GRASS, GROUND, GROUND, GROUND, GROUND, GROUND, random2, random2, random2, random2, random2, GROUND, GROUND, WALL },
-		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, random3, GROUND, random3, GROUND, random3, random3, random3, random3, GROUND, random3, GROUND, random3, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, random2, random2, random2, random2, random2, GROUND, GROUND, WALL },
-		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, random3, GROUND, random3, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, random3, GROUND, random3, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, random2, GROUND, GROUND, random2, GROUND, GROUND, random2, GROUND, WALL },
-		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, random3, GROUND, random3, random3, random3, random3, random3, random3, random3, random3, GROUND, random3, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, random2, GROUND, GROUND, GROUND, random2, GROUND, GROUND, GROUND, random2, WALL },
-		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, random3, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, random3, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, random2, GROUND, GROUND, GROUND, GROUND, WALL },
-		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, random3, random3, random3, random3, random3, random3, random3, random3, random3, random3, random3, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, WALL },
+		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, GRASS, GROUND, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, WALL },
+		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, GRASS, GROUND, GRASS, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GRASS, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, WALL },
+		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, GRASS, GROUND, GRASS, GROUND, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GROUND, GRASS, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, WALL },
+		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, GRASS, GROUND, GRASS, GROUND, GRASS, GROUND, GROUND, GROUND, GROUND, GRASS, GROUND, GRASS, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, WALL },
+		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, GRASS, GROUND, GRASS, GROUND, GRASS, GROUND, GRASS, GRASS, GROUND, GRASS, GROUND, GRASS, GROUND, GROUND, GROUND, GROUND, random3, random3, random3, random3, random3, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, random2, GROUND, GROUND, GROUND, GROUND, WALL },
+		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, GRASS, GROUND, GRASS, GROUND, GRASS, GROUND, GRASS, GRASS, GROUND, GRASS, GROUND, GRASS, GROUND, GROUND, GROUND, GROUND, random3, random3, random3, random3, random3, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, random2, GROUND, GROUND, GROUND, GROUND, WALL },
+		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, GRASS, GROUND, GRASS, GROUND, GRASS, GROUND, GRASS, GRASS, GROUND, GRASS, GROUND, GRASS, GROUND, GROUND, GROUND, GROUND, random3, random3, random3, random3, random3, GROUND, GROUND, GROUND, random2, GROUND, GROUND, GROUND, random2, GROUND, GROUND, random2, GROUND, WALL },
+		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, GRASS, GROUND, GRASS, GROUND, GRASS, GROUND, GRASS, GRASS, GROUND, GRASS, GROUND, GRASS, GROUND, GROUND, GROUND, GROUND, random3, random3, random3, random3, random3, GROUND, GROUND, GROUND, GROUND, random2, GROUND, GROUND, random2, GROUND, random2, GROUND, GROUND, WALL },
+		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, GRASS, GROUND, GRASS, GROUND, GRASS, GROUND, GRASS, GRASS, GROUND, GRASS, GROUND, GRASS, GROUND, GROUND, GROUND, GROUND, random3, random3, random3, random3, random3, GROUND, GROUND, GROUND, GROUND, GROUND, random2, random2, random2, random2, random2, GROUND, GROUND, WALL },
+		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, GRASS, GROUND, GRASS, GROUND, GRASS, GROUND, GROUND, GRASS, GROUND, GRASS, GROUND, GRASS, GROUND, GROUND, GROUND, GROUND, random3, random3, random3, random3, random3, GROUND, GROUND, GROUND, GROUND, GROUND, random2, random2, random2, random2, random2, GROUND, GROUND, WALL },
+		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, GRASS, GROUND, GRASS, GROUND, GRASS, GRASS, GRASS, GRASS, GROUND, GRASS, GROUND, GRASS, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, random2, random2, random2, random2, random2, GROUND, GROUND, WALL },
+		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, GRASS, GROUND, GRASS, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GRASS, GROUND, GRASS, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, random2, GROUND, GROUND, random2, GROUND, GROUND, random2, GROUND, WALL },
+		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, GRASS, GROUND, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GROUND, GRASS, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, random2, GROUND, GROUND, GROUND, random2, GROUND, GROUND, GROUND, random2, WALL },
+		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, GRASS, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GRASS, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, random2, GROUND, GROUND, GROUND, GROUND, WALL },
+		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, WALL },
 		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, WALL, GROUND, WALL, WALL, WALL },
 		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, WALL, GROUND, GROUND, GROUND, WALL },
 		{ WALL, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, WATER, WATER, WATER, WATER, WATER, WATER, WATER, WATER, WATER, WATER, WATER, WATER, WATER, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, GROUND, WALL, GROUND, GROUND, GROUND, WALL },
@@ -456,33 +459,33 @@ void MapManager::createMapV() {
 		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random2, random2, random2, random2, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
 		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, random2, random2, random2, random2, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
 		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, random2, random2, random2, random2, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
-		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, random2, random2, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
+		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random2, random2, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
 		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
 		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
-		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
+		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
 		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
 		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
 		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
-		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
+		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
 		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
 		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
-		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
+		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
 		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, random2, random2, random2, random2, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
 		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, random2, random2, random2, random2, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
 		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, random2, random2, random2, random2, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
 		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, random2, random2, random2, random2, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
 		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, random2, random2, random2, random2, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random3, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
-		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random3, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
+		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random3, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
 		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, random3, GRASS, GRASS, GRASS, GRASS, random3, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
 		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random3, GRASS, GRASS, GRASS, random3, GRASS, GRASS, GRASS, random3, GRASS, GRASS, WALL },
-		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random3, GRASS, GRASS, random3, GRASS, GRASS, random3, GRASS, GRASS, GRASS, WALL },
+		{ WALL, GRASS, random0, GRASS, random0, GRASS, random0, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random3, GRASS, GRASS, random3, GRASS, GRASS, random3, GRASS, GRASS, GRASS, WALL },
 		{ WALL, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random3, GRASS, random3, GRASS, random3, GRASS, GRASS, GRASS, WALL },
 		{ WALL, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random3, random3, random3, GRASS, GRASS, GRASS, GRASS, WALL },
 		{ WALL, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random3, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
-		{ WALL, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random3, GRASS, random3, GRASS, GRASS, GRASS, GRASS, WALL },
+		{ WALL, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random3, GRASS, random3, GRASS, GRASS, GRASS, GRASS, WALL },
 		{ WALL, GRASS, random0, random0, random0, random0, random0, random0, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random3, GRASS, GRASS, GRASS, random3, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
 		{ WALL, GRASS, random0, random0, random0, random0, random0, random0, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random3, GRASS, GRASS, GRASS, GRASS, GRASS, random3, GRASS, GRASS, GRASS, GRASS, WALL },
-		{ WALL, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, random3, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random3, GRASS, WALL },
+		{ WALL, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random3, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random3, GRASS, WALL },
 		{ WALL, GRASS, random0, random0, random0, random0, random0, random0, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
 		{ WALL, GRASS, random0, random0, random0, random0, random0, random0, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, random2, random2, random2, random2, random2, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
 		{ WALL, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, random2, random2, random2, random2, GRASS, GRASS, GRASS, GRASS, GRASS, random1, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, WALL },
@@ -591,14 +594,30 @@ void MapManager::createMap() {
 	}
 }
 
+//Method which adaptes the Map according to device's screen resolution
+
+void MapManager::resizeMap() {
+
+	for (int i = 0; i < MAP_WIDTH; i++) {
+		for (int j = 0; j < MAP_HEIGHT; j++) {
+			auto tiles = layer->getTileAt(Vec2(j, i));
+			tiles->setScale(25 / tiles->getContentSize().width);
+			tiles->setPosition(Vec2(Director::getInstance()->getVisibleOrigin().x + 25 * j, -25 + Director::getInstance()->getVisibleOrigin().y + MAP_SIZE_HEIGHT - 25 * i));
+		}
+	}
+
+}
+
+
 //Method which loads pseudo-randomly some enemies on the Scene
 
 void MapManager::positionEnemies() {
 	int randomEnemies = RandomHelper::random_int(0, 3);
 	for (int i = 0; i <= randomEnemies; i++) {
-		EnemyType randomTypeEnemy = (EnemyType)RandomHelper::random_int(0, 3);
+		EnemyType randomTypeEnemy = (EnemyType)RandomHelper::random_int(0, 6);
 		if (randomTypeEnemy == SENTRY) {
 			enemies[i] = Enemy::create("Sentry.png");
+			enemies[i]->setScale(25 / layer->getTileAt(Vec2(0, 0))->getContentSize().width);
 			enemies[i]->setState(IDLE);
 			enemies[i]->setType(SENTRY);
 			enemies[i]->setMapGame(this);
@@ -622,6 +641,7 @@ void MapManager::positionEnemies() {
 		}
 		else if (randomTypeEnemy == KAMIKAZE) {
 			enemies[i] = Enemy::create("Kamikaze.png");
+			enemies[i]->setScale(25 / layer->getTileAt(Vec2(0, 0))->getContentSize().width);
 			enemies[i]->setState(IDLE);
 			enemies[i]->setType(KAMIKAZE);
 			enemies[i]->setMapGame(this);
@@ -641,6 +661,7 @@ void MapManager::positionEnemies() {
 		}
 		else if (randomTypeEnemy == TOWER) {
 			enemies[i] = Enemy::create("Tower.png");
+			enemies[i]->setScale(25 / layer->getTileAt(Vec2(0, 0))->getContentSize().width);
 			enemies[i]->setState(IDLE);
 			enemies[i]->setType(TOWER);
 			enemies[i]->setMapGame(this);
@@ -661,6 +682,7 @@ void MapManager::positionEnemies() {
 		}
 		else if (randomTypeEnemy == SCOUT) {
 			enemies[i] = Enemy::create("Scout.png");
+			enemies[i]->setScale(25 / layer->getTileAt(Vec2(0, 0))->getContentSize().width);
 			enemies[i]->setState(IDLE);
 			enemies[i]->setType(SCOUT);
 			enemies[i]->setMapGame(this);
@@ -688,11 +710,12 @@ void MapManager::positionEnemies() {
 //Method which loads pseudo-randomly some items on the Scene
 
 void MapManager::positionObjects() {
-	int randomObjects = RandomHelper::random_int(0, 4);
+	int randomObjects = RandomHelper::random_int(0, 6);
 	for (int i = 0; i <= randomObjects; i++) {
-		Thing randomTypeObject = (Thing)RandomHelper::random_int(1, 3);
+		Thing randomTypeObject = (Thing)RandomHelper::random_int(1, 4);
 		if (randomTypeObject == CURE) {
 			objects[i] = Item::create("Medikit.png");
+			objects[i]->setScale(25 / layer->getTileAt(Vec2(0, 0))->getContentSize().width);
 			Point randomPosition = Point(RandomHelper::random_int(25, 950), RandomHelper::random_int(25, 950));
 			Point control = this->tileCoordForPosition(randomPosition);
 			while (mat[(int)control.x][(int)control.y] == WALL || mat[(int)control.x][(int)control.y] == WATER || mat[(int)control.x][(int)control.y] == NONE) {
@@ -706,6 +729,7 @@ void MapManager::positionObjects() {
 		}
 		else if (randomTypeObject == POWER_UP) {
 			objects[i] = Item::create("FMJ.png");
+			objects[i]->setScale(25 / layer->getTileAt(Vec2(0, 0))->getContentSize().width);
 			Point randomPosition1 = Point(RandomHelper::random_int(25, 950), RandomHelper::random_int(25, 950));
 			Point control1 = this->tileCoordForPosition(randomPosition1);
 			while (mat[(int)control1.x][(int)control1.y] == WALL || mat[(int)control1.x][(int)control1.y] == WATER || mat[(int)control1.x][(int)control1.y] == NONE) {
@@ -719,6 +743,7 @@ void MapManager::positionObjects() {
 		}
 		else if (randomTypeObject == DEFENSE_UP){
 			objects[i] = Item::create("Shell.png");
+			objects[i]->setScale(25 / layer->getTileAt(Vec2(0, 0))->getContentSize().width);
 			Point randomPosition2 = Point(RandomHelper::random_int(25, 950), RandomHelper::random_int(25, 950));
 			Point control2 = this->tileCoordForPosition(randomPosition2);
 			while (mat[(int)control2.x][(int)control2.y] == WALL || mat[(int)control2.x][(int)control2.y] == WATER || mat[(int)control2.x][(int)control2.y] == NONE) {
@@ -726,6 +751,20 @@ void MapManager::positionObjects() {
 				control2 = this->tileCoordForPosition(randomPosition2);
 			}
 			objects[i]->setPosition(randomPosition2);
+			objects[i]->setPlayer(_player);
+			tile->addChild(objects[i]);
+			objects[i]->scheduleUpdate();
+		}
+		else if (randomTypeObject == CHEST) {
+			objects[i] = Item::create("Chest.png");
+			objects[i]->setScale(25 / layer->getTileAt(Vec2(0, 0))->getContentSize().width);
+			Point randomPosition3 = Point(RandomHelper::random_int(25, 950), RandomHelper::random_int(25, 950));
+			Point control3 = this->tileCoordForPosition(randomPosition3);
+			while (mat[(int)control3.x][(int)control3.y] == WALL || mat[(int)control3.x][(int)control3.y] == WATER || mat[(int)control3.x][(int)control3.y] == NONE) {
+				randomPosition3 = Point(RandomHelper::random_int(25, 950), RandomHelper::random_int(25, 950));
+				control3 = this->tileCoordForPosition(randomPosition3);
+			}
+			objects[i]->setPosition(randomPosition3);
 			objects[i]->setPlayer(_player);
 			tile->addChild(objects[i]);
 			objects[i]->scheduleUpdate();

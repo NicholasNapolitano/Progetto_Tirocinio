@@ -88,6 +88,7 @@ void PlayerBullet::stun(Ref *pSender) {
 void PlayerBullet::setExplosionSprite(Ref *pSender) {
 	SoundManager::getInstance()->startGrenadeSound();
 	explode = Sprite::create("Explosion.png");
+	explode->setScale(this->getTargetEnemy()->getMapFight()->getLayer()->getTileAt(Vec2(0, 0))->getScale());
 	explode->setPosition(this->getPosition());
 	this->getParent()->addChild(explode);
 }
@@ -97,6 +98,7 @@ void PlayerBullet::setExplosionSprite(Ref *pSender) {
 void PlayerBullet::setRadiationSprite(Ref *pSender) {
 	SoundManager::getInstance()->startGasSound();
 	gas = Sprite::create("RadiationExplosion.png");
+	gas->setScale(this->getTargetEnemy()->getMapFight()->getLayer()->getTileAt(Vec2(0, 0))->getScale());
 	gas->setPosition(this->getPosition());
 	this->getParent()->addChild(gas);
 }
@@ -283,5 +285,9 @@ const State PlayerBullet::getState() const
 const char* PlayerBullet::getStateName() const
 {
 	return typeid(_state).name();
+}
+
+Enemy* PlayerBullet::getTargetEnemy() {
+	return this->enemy;
 }
 

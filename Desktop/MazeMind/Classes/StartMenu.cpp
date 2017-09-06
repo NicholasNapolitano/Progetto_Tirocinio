@@ -31,6 +31,7 @@ bool StartMenu::init()
 		return false;
 	}
 	
+	float scaleFactor = Director::getInstance()->getContentScaleFactor();
 	this->core = GameManager::getInstance();
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -75,16 +76,20 @@ bool StartMenu::init()
 	auto menu_item_3 = MenuItemFont::create("Settings", CC_CALLBACK_1(StartMenu::settings, this));
 
 
-	menu_item_1->setPosition(Point(origin.x + visibleSize.width / 2, origin.y + visibleSize.height - menu_item_1->getContentSize().height * 4));
+	menu_item_1->setPosition(Point(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 1.5));
 	menu_item_1->setColor(Color3B::ORANGE);
-	menu_item_2->setPosition(Point(origin.x + visibleSize.width / 2, origin.y + visibleSize.height - menu_item_2->getContentSize().height * 8));
+	menu_item_1->setFontSizeObj(menu_item_1->getFontSizeObj() / scaleFactor);
+	menu_item_2->setPosition(Point(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 1.9));
 	menu_item_2->setColor(Color3B::YELLOW);
-	menu_item_3->setPosition(Point(origin.x + visibleSize.width / 2, origin.y + visibleSize.height - menu_item_1->getContentSize().height * 12));
+	menu_item_2->setFontSizeObj(menu_item_2->getFontSizeObj() / scaleFactor);
+	menu_item_3->setPosition(Point(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2.5));
 	menu_item_3->setColor(Color3B::GREEN);
+	menu_item_3->setFontSizeObj(menu_item_3->getFontSizeObj() / scaleFactor);
 	auto label0 = Label::createWithTTF("MAZE MIND", "fonts/Marker Felt.ttf", 40);
 
 	// position the label on the center of the screen
-	label0->setPosition(Point(origin.x + visibleSize.width / 2, visibleSize.height - label0->getContentSize().height));
+	label0->setScale(label0->getScale() / scaleFactor);
+	label0->setPosition(Point(origin.x + visibleSize.width / 2, visibleSize.height - label0->getContentSize().height * 1.5));
 	label0->setTextColor(Color4B::RED);
 	// add the label as a child to this layer
 	this->addChild(label0, 1);

@@ -82,15 +82,13 @@ void ProducersLayer::entrance() {
 	producer = Sprite::create("Barbocchiale.png");
 	agency = Sprite::create("H2App.png");
 	engine = Sprite::create("Cocos2DX.png");
-	producer->setPosition(Vec2(origin.x + visibleSize.width / 3, origin.y + visibleSize.height / 3));
+	producer->setPosition(Vec2(origin.x + visibleSize.width / 3.2, origin.y + visibleSize.height / 3));
 	this->addChild(producer, 5);
-	producer->runAction(FadeIn::create(1.5f));
 	agency->setPosition(Vec2(origin.x + visibleSize.width / 1.5, origin.y + visibleSize.height / 3));
 	this->addChild(agency, 5);
-	agency->runAction(FadeIn::create(1.5f));
 	engine->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 1.5));
 	this->addChild(engine, 5);
-	engine->runAction(FadeIn::create(1.5f));
+	this->runAction(FadeIn::create(1.0f));
 }
 
 //Method that makes logos disappear
@@ -106,7 +104,7 @@ void ProducersLayer::exit() {
 
 void ProducersLayer::ProducersDone()
 {
-	GameManager::getInstance()->startGame();
+	GameManager::getInstance()->startPresentation();
 }
 
 //Constructor

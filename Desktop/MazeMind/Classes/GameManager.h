@@ -25,6 +25,8 @@ public:
 	void restartGame();
 	void viewHighScore();
 	void changeSettings();
+	void setExtraScore(Player* player);
+	void startPresentation();
 
 
 protected:

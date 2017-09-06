@@ -33,7 +33,7 @@ bool StrategyMenu::init()
 	{
 		return false;
 	}
-
+	float scaleFactor = Director::getInstance()->getContentScaleFactor();
 	this->core = GameManager::getInstance();
 	visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -108,7 +108,7 @@ bool StrategyMenu::init()
 	Sprite* _armguard_ = Sprite::create("Armguard.png");
 
 
-	auto menu_item_1 = MenuItemFont::create("--> EnterTheGame <-- ", CC_CALLBACK_1(StrategyMenu::enterTheGame, this));
+	auto menu_item_1 = MenuItemFont::create("--> EnjoyTheGame <-- ", CC_CALLBACK_1(StrategyMenu::enjoyTheGame, this));
 	auto menu_item_2 = MenuItemSprite::create(_gun_, _gun_, CC_CALLBACK_1(StrategyMenu::gun, this));
 	auto menu_item_3 = MenuItemFont::create("Defeat_Enemy", CC_CALLBACK_1(StrategyMenu::defeatEnemy, this));
 	auto menu_item_4 = MenuItemFont::create("Distance_Attack", CC_CALLBACK_1(StrategyMenu::distanceAttack, this));
@@ -126,6 +126,7 @@ bool StrategyMenu::init()
 	auto menu_item_16 = MenuItemSprite::create(_armguard_, _armguard_, CC_CALLBACK_1(StrategyMenu::armguard, this));
 	auto menu_item_17 = MenuItemFont::create("Normal", CC_CALLBACK_1(StrategyMenu::normal, this));
 	auto menu_item_18 = MenuItemFont::create("Go_To_The_Goal", CC_CALLBACK_1(StrategyMenu::goToTheGoal, this));
+	auto menu_item_19 = MenuItemFont::create("Menu", CC_CALLBACK_1(StrategyMenu::menu, this));
 
 	menu_item_1->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 1.05) * 3));
 	menu_item_2->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 1.30) * 3));
@@ -145,15 +146,27 @@ bool StrategyMenu::init()
 	menu_item_16->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 3.40) * 3));
 	menu_item_17->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 1.15) * 3));
 	menu_item_18->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 1.20) * 3));
+	menu_item_19->setPosition(Point(origin.x, origin.y + visibleSize.height * 3));
+	menu_item_19->setAnchorPoint(Point(0, 1));
 
 	menu_item_1->setColor(Color3B::RED);
 
+	menu_item_1->setFontSizeObj(menu_item_1->getFontSizeObj() / scaleFactor);
+	menu_item_3->setFontSizeObj(menu_item_3->getFontSizeObj() / scaleFactor);
+	menu_item_4->setFontSizeObj(menu_item_4->getFontSizeObj() / scaleFactor);
+	menu_item_8->setFontSizeObj(menu_item_8->getFontSizeObj() / scaleFactor);
+	menu_item_10->setFontSizeObj(menu_item_10->getFontSizeObj() / scaleFactor);
+	menu_item_15->setFontSizeObj(menu_item_15->getFontSizeObj() / scaleFactor);
+	menu_item_17->setFontSizeObj(menu_item_17->getFontSizeObj() / scaleFactor);
+	menu_item_18->setFontSizeObj(menu_item_18->getFontSizeObj() / scaleFactor);
+	menu_item_19->setFontSizeObj(menu_item_19->getFontSizeObj() / scaleFactor);
 
 	auto label = Label::createWithTTF("Choose Your Strategy", "fonts/Marker Felt.ttf", 24);
 
 	// position the label on the center of the screen
 	label->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 1.60) * 3));
-	label->setTextColor(Color4B::BLUE);
+	label->setTextColor(Color4B::ORANGE);
+	label->setScale(label->getScale() / scaleFactor);
 	// add the label as a child to this layer
 	scrollView->addChild(label, 1);
 
@@ -162,6 +175,7 @@ bool StrategyMenu::init()
 	// position the label on the center of the screen
 	label1->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 1.25) * 3));
 	label1->setTextColor(Color4B::YELLOW);
+	label1->setScale(label1->getScale() / scaleFactor);
 	// add the label as a child to this layer
 	scrollView->addChild(label1, 1);
 
@@ -170,6 +184,7 @@ bool StrategyMenu::init()
 	// position the label on the center of the screen
 	label2->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 2.15) * 3));
 	label2->setTextColor(Color4B::GREEN);
+	label2->setScale(label2->getScale() / scaleFactor);
 	// add the label as a child to this layer
 	scrollView->addChild(label2, 1);
 
@@ -178,10 +193,11 @@ bool StrategyMenu::init()
 	// position the label on the center of the screen
 	label3->setPosition(Point(visibleSize.width / 2, (visibleSize.height / 1.10) * 3));
 	label3->setTextColor(Color4B::MAGENTA);
+	label3->setScale(label3->getScale() / scaleFactor);
 	// add the label as a child to this layer
 	scrollView->addChild(label3, 1);
 
-	auto menu = Menu::create(menu_item_1, menu_item_2, menu_item_3, menu_item_4, menu_item_5, menu_item_6, menu_item_7, menu_item_8, menu_item_9, menu_item_10, menu_item_11, menu_item_12, menu_item_13, menu_item_14, menu_item_15, menu_item_16, menu_item_17, menu_item_18, closeItem, NULL);
+	auto menu = Menu::create(menu_item_1, menu_item_2, menu_item_3, menu_item_4, menu_item_5, menu_item_6, menu_item_7, menu_item_8, menu_item_9, menu_item_10, menu_item_11, menu_item_12, menu_item_13, menu_item_14, menu_item_15, menu_item_16, menu_item_17, menu_item_18, menu_item_19, closeItem, NULL);
 	menu->setPosition(Point(0, 0));
 	scrollView->addChild(menu, 1);
 
@@ -192,7 +208,7 @@ bool StrategyMenu::init()
 
 //Method which asks GameManager to push MapManager scene
 
-void StrategyMenu::enterTheGame(Ref *pSender)
+void StrategyMenu::enjoyTheGame(Ref *pSender)
 {
 	log("EnterTheGame");
 	core->playGame(this->player);
@@ -376,6 +392,14 @@ void StrategyMenu::menuCloseCallback(Ref* pSender)
 	//_eventDispatcher->dispatchEvent(&customEndEvent);
 
 
+}
+
+//Return to the Menu
+
+void StrategyMenu::menu(Ref *pSender)
+{
+	log("Back");
+	Director::getInstance()->popScene();
 }
 
 //Getter & Setter

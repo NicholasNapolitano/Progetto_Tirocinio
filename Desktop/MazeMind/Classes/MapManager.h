@@ -7,11 +7,11 @@
 #include "Enemy.h"
 
 USING_NS_CC;
-
-#define MAP_WIDTH   40
+#define SCALE_FACTOR Director::getInstance()->getContentScaleFactor()
+#define MAP_WIDTH   40 
 #define MAP_HEIGHT  40
-#define TILE_WIDTH   25
-#define TILE_HEIGHT  25
+#define TILE_WIDTH   25 // / SCALE_FACTOR
+#define TILE_HEIGHT  25 // / SCALE_FACTOR
 #define MAP_SIZE_WIDTH  MAP_WIDTH*TILE_WIDTH
 #define MAP_SIZE_HEIGHT  MAP_HEIGHT*TILE_HEIGHT
 
@@ -57,6 +57,7 @@ public:
 	HudLayer* getHud();
 	void setHud(HudLayer* hud);
 	void createMap();
+	void resizeMap();
 	void positionEnemies();
 	void positionObjects();
 
@@ -71,8 +72,8 @@ private:
 	Node* container;
 	GameManager* core;
 	StrategyMenu* strategy;
-	Item* objects[5];
-	Enemy* enemies[4];
+	Item* objects[7];
+	Enemy* enemies[7];
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(MapManager);

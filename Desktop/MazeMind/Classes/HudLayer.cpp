@@ -8,13 +8,14 @@ USING_NS_CC;
 //Constructor
 
 HudLayer::HudLayer(){
-
+	float scaleFactor = Director::getInstance()->getContentScaleFactor();
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
 	button = ui::Button::create("initNormal.png", "initSelected.png");
 	button->setTitleText("Reload");
 	button->setTitleFontSize(16.0f);
+	button->setTitleFontSize(button->getTitleFontSize() / scaleFactor);
 	button->setTitleColor(Color3B::BLACK);
 	button->addTouchEventListener([&](Ref* sender, ui::Widget::TouchEventType type) {
 		switch (type)
@@ -61,6 +62,7 @@ HudLayer::HudLayer(){
 	score->setPosition(Point(origin.x, origin.y + visibleSize.height));
 	score->setAnchorPoint(Point(0, 1));
 	score->setTextColor(Color4B::BLUE);
+	score->setScale(score->getScale() / scaleFactor);
 	// add the label as a child to this layer
 	this->addChild(score, 1);
 
@@ -68,11 +70,11 @@ HudLayer::HudLayer(){
 
 	__String *tempScore = __String::createWithFormat("%d", scorePoints);
 	points = Label::createWithTTF(tempScore->getCString(), "fonts/Marker Felt.ttf", 32);
-	points->setPosition(Point(origin.x + 100, origin.y + visibleSize.height));
+	points->setPosition(Point(origin.x + (score->getContentSize().width / scaleFactor), origin.y + visibleSize.height));
 	points->setAnchorPoint(Point(0, 1));
 	points->setTextColor(Color4B::BLUE);
+	points->setScale(points->getScale() / scaleFactor);
 	this->addChild(points, 1);
-
 	this->scheduleUpdate();
 }
 

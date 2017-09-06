@@ -83,7 +83,8 @@ enum Thing {
 	ANY_ONE,
 	CURE,
 	POWER_UP,
-	DEFENSE_UP
+	DEFENSE_UP,
+	CHEST
 };
 
 //Enumerative Type used to change the Movement of a Character

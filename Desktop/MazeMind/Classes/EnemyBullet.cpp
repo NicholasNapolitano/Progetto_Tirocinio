@@ -88,6 +88,7 @@ void EnemyBullet::stun(Ref *pSender) {
 void EnemyBullet::setExplosionSprite(Ref *pSender) {
 	SoundManager::getInstance()->startGrenadeSound();
 	explode = Sprite::create("Explosion.png");
+	explode->setScale(this->getTargetPlayer()->getMapFight()->getLayer()->getTileAt(Vec2(0, 0))->getScale());
 	explode->setPosition(this->getPosition());
 	this->getParent()->addChild(explode);
 }
@@ -97,6 +98,7 @@ void EnemyBullet::setExplosionSprite(Ref *pSender) {
 void EnemyBullet::setRadiationSprite(Ref *pSender) {
 	SoundManager::getInstance()->startGasSound();
 	gas = Sprite::create("RadiationExplosion.png");
+	gas->setScale(this->getTargetPlayer()->getMapFight()->getLayer()->getTileAt(Vec2(0, 0))->getScale());
 	gas->setPosition(this->getPosition());
 	this->getParent()->addChild(gas);
 }
@@ -226,7 +228,7 @@ void EnemyBullet::update(float dt)
 				auto offset = Point(player->getPosition() - this->getPosition());
 				offset.normalize();
 				auto shootAmount = offset * 130;
-				auto realDest = -(shootAmount + this->getPosition());
+				auto realDest = shootAmount + this->getPosition();
 
 				auto callBack0 = CallFuncN::create(CC_CALLBACK_1(EnemyBullet::explosion, this));
 				auto callBack1 = CallFuncN::create(CC_CALLBACK_1(EnemyBullet::setExplosionSprite, this));
@@ -294,4 +296,8 @@ const State EnemyBullet::getState() const
 const char* EnemyBullet::getStateName() const
 {
 	return typeid(_state).name();
+}
+
+Player* EnemyBullet::getTargetPlayer() {
+	return this->player;
 }

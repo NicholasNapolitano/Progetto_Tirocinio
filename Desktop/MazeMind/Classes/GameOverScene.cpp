@@ -42,11 +42,13 @@ bool GameOverLayer::init()
 {
 	if (LayerColor::initWithColor(Color4B::WHITE))
 	{
+		float scaleFactor = Director::getInstance()->getContentScaleFactor();
 		Size winSize = Director::getInstance()->getWinSize();
 		this->_label = LabelTTF::create("", "Artial", 32);
 		_label->retain();
 		_label->setColor(Color3B::BLACK);
 		_label->setPosition(Point(winSize.width / 2, winSize.height / 2));
+		_label->setScale(_label->getScale() / scaleFactor);
 		this->addChild(_label);
 
 		this->runAction(Sequence::create(
