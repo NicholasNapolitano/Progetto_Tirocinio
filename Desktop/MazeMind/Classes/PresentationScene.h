@@ -26,6 +26,7 @@ private:
 	Sprite* part1;
 	Sprite* part2;
 	Sprite* part3;
+	Sprite* background;
 
 };
 

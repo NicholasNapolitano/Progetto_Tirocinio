@@ -86,7 +86,7 @@ void ProducersLayer::entrance() {
 	this->addChild(producer, 5);
 	agency->setPosition(Vec2(origin.x + visibleSize.width / 1.5, origin.y + visibleSize.height / 3));
 	this->addChild(agency, 5);
-	engine->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 1.5));
+	engine->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 1.3));
 	this->addChild(engine, 5);
 	this->runAction(FadeIn::create(1.0f));
 }

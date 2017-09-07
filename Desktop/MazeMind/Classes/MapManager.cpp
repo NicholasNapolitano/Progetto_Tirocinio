@@ -91,7 +91,20 @@ bool MapManager::init()
 	_player->setDestination(Point(origin.x + 957, origin.y + 957));
 	tile->addChild(_player);
 
-	this->positionEnemies();
+	//this->positionEnemies();
+	enemies[0] = Enemy::create("Tower.png");
+	enemies[0]->setScale(25 / layer->getTileAt(Vec2(0, 0))->getContentSize().width);
+	enemies[0]->setState(IDLE);
+	enemies[0]->setType(TOWER);
+	enemies[0]->setMapGame(this);
+	enemies[0]->setMappa(this->getMap());
+	enemies[0]->setTileMap(this->getTileMap());
+	enemies[0]->setActualScene(EXPLORATION);
+	enemies[0]->setActualWeapon(RIFLE);
+	enemies[0]->setPosition(Point(origin.x + 57, origin.y + 32));
+	enemies[0]->setTarget(_player);
+	tile->addChild(enemies[0], 5, "Enemy");
+	enemies[0]->scheduleUpdate();
 	this->positionObjects();
 
 	hud = new HudLayer();

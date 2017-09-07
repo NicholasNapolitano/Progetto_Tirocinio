@@ -29,7 +29,7 @@ void StrategyManager::defensiveAsset(Player* player) {
 	if (player->getTarget() != NULL) {
 		player->lookingAround();
 		auto diff2 = player->getTarget()->getPosition() - player->getPosition();
-		if (((abs(diff2.x) <= 50 || abs(diff2.y) <= 50) && (player->getActualWeapon() == GUN))) {
+		if (((abs(diff2.x) <= 60 && abs(diff2.y) <= 60) && (player->getActualWeapon() == GUN)) || ((abs(diff2.x) <= 30 && abs(diff2.y) <= 30) && (player->getActualWeapon() == KNIFE))) {
 			player->setState(ATTACKING);
 			player->startAttacking();
 			player->setDeltaTime(0);
@@ -135,7 +135,7 @@ void StrategyManager::retreat(Player* player) {
 	if (player->getTarget() != NULL) {
 		player->lookingAround();
 		auto diff2 = player->getTarget()->getPosition() - player->getPosition();
-		if (((abs(diff2.x) <= 20 || abs(diff2.y) <= 20) && (player->getActualWeapon() == KNIFE))) {
+		if (((abs(diff2.x) <= 60 && abs(diff2.y) <= 60) && (player->getActualWeapon() == GUN)) || ((abs(diff2.x) <= 30 && abs(diff2.y) <= 30) && (player->getActualWeapon() == KNIFE))) {
 			player->setState(ATTACKING);
 			player->startAttacking();
 			player->setDeltaTime(0);
@@ -144,11 +144,11 @@ void StrategyManager::retreat(Player* player) {
 		else {
 			player->setState(MOVING);
 			auto road = meta - player->getPosition();
-			if (road.x >= 0) {
-				player->controlRight();
-			}
-			else if (road.y >= 0) {
+			if (road.y >= 0) {
 				player->controlUp();
+			}
+			else if (road.x >= 0) {
+				player->controlRight();
 			}
 			else if (road.x < 0) {
 				player->controlLeft();
@@ -171,7 +171,7 @@ void StrategyManager::be_Patient(Player* player) {
 			this->defensiveAsset(player);
 		}
 		auto diff3 = player->getTarget()->getPosition() - player->getPosition();
-		if (((abs(diff3.x) <= 50 || abs(diff3.y) <= 50) && (player->getActualWeapon() == GUN)) || ((abs(diff3.x) <= 100 || abs(diff3.y) <= 100) && (player->getActualWeapon() == RIFLE)) || ((abs(diff3.x) <= 150 || abs(diff3.y) <= 150) && (player->getActualWeapon() == SNIPER)) || ((abs(diff3.x) <= 120 || abs(diff3.y) <= 120) && (player->getActualWeapon() == GRENADE)) || ((abs(diff3.x) <= 22 || abs(diff3.y) <= 22) && (player->getActualWeapon() == KNIFE))) {
+		if (((abs(diff3.x) <= 50 || abs(diff3.y) <= 50) && (player->getActualWeapon() == GUN)) || ((abs(diff3.x) <= 100 || abs(diff3.y) <= 100) && (player->getActualWeapon() == RIFLE)) || ((abs(diff3.x) <= 150 || abs(diff3.y) <= 150) && (player->getActualWeapon() == SNIPER)) || ((abs(diff3.x) <= 120 || abs(diff3.y) <= 120) && (player->getActualWeapon() == GRENADE)) || ((abs(diff3.x) <= 30 || abs(diff3.y) <= 30) && (player->getActualWeapon() == KNIFE))) {
 			player->setState(ATTACKING);
 			player->startAttacking();
 			player->setDeltaTime(0);
@@ -245,7 +245,7 @@ void StrategyManager::stun_Enemy(Player* player) {
 		}
 		else {
 			auto diff3 = player->getTarget()->getPosition() - player->getPosition();
-			if (((abs(diff3.x) <= 130 || abs(diff3.y) <= 130) && (player->getActualWeapon() == RADIATION))) {
+			if (player->getActualWeapon() == RADIATION) {
 				player->setState(ATTACKING);
 				player->startAttacking();
 				player->setDeltaTime(0);
@@ -327,7 +327,7 @@ void StrategyManager::sentryBehaviour(Enemy* enemy) {
 			auto meta = Point(6, 6);
 			if (enemy->getTarget() != NULL) {
 				auto diff2 = enemy->getTarget()->getPosition() - enemy->getPosition();
-				if (((abs(diff2.x) <= 50 || abs(diff2.y) <= 50) && (enemy->getActualWeapon() == GUN))) {
+				if (((abs(diff2.x) <= 60 || abs(diff2.y) <= 60) && (enemy->getActualWeapon() == GUN)) || ((abs(diff2.x) <= 30 || abs(diff2.y) <= 30) && (enemy->getActualWeapon() == KNIFE))) {
 				enemy->setState(ATTACKING);
 				enemy->startAttacking();
 				enemy->setDeltaTime(0);

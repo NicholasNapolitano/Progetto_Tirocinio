@@ -113,6 +113,12 @@ public:
 
 	bool contain(std::list<queueNode> parents, queueNode p);
 
+	int getPlatelets();
+	int getObjects();
+
+	void setPlatelets(int platelets);
+	void setObjects(int objects);
+
 
 protected:
 
@@ -149,6 +155,8 @@ private:
 	std::list<Point> route;
 	std::queue<Point> aux;
 	int *dist;
+	int platelets;
+	int objects;
 
 	
 

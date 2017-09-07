@@ -23,6 +23,15 @@ SoundManager* SoundManager::getInstance()
 	return instance;
 }
 
+//Start Presentation's music
+
+void SoundManager::startPresentationMusic()
+{
+	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	audio->preloadBackgroundMusic("Presentation.mp3");
+	audio->playBackgroundMusic("Presentation.mp3");
+}
+
 //Start Menu's music
 
 void SoundManager::startMenuMusic()

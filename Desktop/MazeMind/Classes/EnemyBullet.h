@@ -48,6 +48,7 @@ private:
 	Weapon weapon;
 	Sprite* explode;
 	Sprite* gas;
+	int hit;
 
 };
 

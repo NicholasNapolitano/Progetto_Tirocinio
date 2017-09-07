@@ -183,6 +183,23 @@ void GameManager::setExtraScore(Player* player) {
 		player->getMapGame()->getHud()->setScore(player->getMapGame()->getHud()->getScore() + 500);
 	}
 
+	int platelets = player->getPlatelets();
+	if (platelets == 0) {
+		player->getMapGame()->getHud()->setScore(player->getMapGame()->getHud()->getScore() + 200);
+	}
+	else {
+		player->getMapGame()->getHud()->setScore(player->getMapGame()->getHud()->getScore() + 50 * platelets);
+	}
+
+	int objects = player->getObjects();
+	if (objects == 0) {
+		player->getMapGame()->getHud()->setScore(player->getMapGame()->getHud()->getScore() + 200);
+	}
+	else {
+		player->getMapGame()->getHud()->setScore(player->getMapGame()->getHud()->getScore() + 50 * objects);
+	}
+
+
 	return;
 }
 

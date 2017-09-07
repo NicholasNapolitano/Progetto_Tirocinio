@@ -89,6 +89,7 @@ void Enemy::update(float dt)
 			}
 		this->getParent()->unscheduleAllCallbacks();
 		SoundManager::getInstance()->startWinSound();
+		this->getTarget()->setPlatelets(this->getTarget()->getPlatelets() + 1);
 		this->getMapFight()->getHud()->setScore(this->getMapFight()->getHud()->getScore() + 100);
 		this->getMapFight()->finishBattle();
 		return;
@@ -147,7 +148,6 @@ void Enemy::update(float dt)
 void Enemy::startGoingUp() {
 	auto position = this->getPosition();
 	auto newPosition = Point(position.x, position.y + TILE_HEIGHT);
-	log("newPosition: (%d %d)", (int)newPosition.x, (int)newPosition.y);
 	auto move = Sequence::create(MoveTo::create(0.5f, Vec2(newPosition.x, newPosition.y)), nullptr);
 	this->runAction(move);
 	return;
@@ -156,7 +156,6 @@ void Enemy::startGoingUp() {
 void Enemy::startGoingDown() {
 	auto position = this->getPosition();
 	auto newPosition = Point(position.x, position.y - TILE_HEIGHT);
-	log("newPosition: (%d %d)", (int)newPosition.x, (int)newPosition.y);
 	auto move = Sequence::create(MoveTo::create(0.5f, Vec2(newPosition.x, newPosition.y)), nullptr);
 	this->runAction(move);
 	return;
@@ -166,7 +165,6 @@ void Enemy::startGoingDown() {
 void Enemy::startGoingLeft() {
 	auto position = this->getPosition();
 	auto newPosition = Point(position.x - TILE_WIDTH, position.y);
-	log("newPosition: (%d %d)", (int)newPosition.x, (int)newPosition.y);
 	auto move = Sequence::create(MoveTo::create(0.5f, Vec2(newPosition.x, newPosition.y)), nullptr);
 	this->runAction(move);
 	return;
@@ -175,7 +173,6 @@ void Enemy::startGoingLeft() {
 void Enemy::startGoingRight() {
 	auto position = this->getPosition();
 	auto newPosition = Point(position.x + TILE_WIDTH, position.y);
-	log("newPosition: (%d %d)", (int)newPosition.x, (int)newPosition.y);
 	auto move = Sequence::create(MoveTo::create(0.5f, Vec2(newPosition.x, newPosition.y)), nullptr);
 	this->runAction(move);
 	return;

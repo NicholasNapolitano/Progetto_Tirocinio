@@ -17,7 +17,8 @@ EnemyBullet* EnemyBullet::create(const std::string& filename)
 		bullet->autorelease();
 		//default state
 		bullet->setPreviousState(IDLE);
-		bullet->deltaTime = 1.0f;
+		bullet->deltaTime = 3.0f;
+		bullet->hit = 0;
 		return bullet;
 	}
 	CC_SAFE_DELETE(bullet);
@@ -27,7 +28,7 @@ EnemyBullet* EnemyBullet::create(const std::string& filename)
 //Method which described what happens when the EnemyBullet hits the Player (based on the Weapon)
 
 void EnemyBullet::hitPlayer() {
-	if (this->weapon == GRENADE) {
+	if (this->weapon == GRENADE && this->hit == 0) {
 		if (explode != NULL) {
 			if (this->getBoundingBox().intersectsRect(this->player->getBoundingBox())) {
 				player->hurt();
@@ -35,10 +36,11 @@ void EnemyBullet::hitPlayer() {
 			if (this->getBoundingBox().intersectsRect(this->player->getTarget()->getBoundingBox())) {
 				player->getTarget()->hurt();
 			}
+			this->hit = 1;
 		}
 		else return;
 	}
-	else if (this->weapon == RADIATION) {
+	else if (this->weapon == RADIATION && this->hit == 0) {
 		if (gas != NULL) {
 			if (this->getBoundingBox().intersectsRect(this->player->getBoundingBox())) {
 				player->hurt();
@@ -46,6 +48,7 @@ void EnemyBullet::hitPlayer() {
 			if (this->getBoundingBox().intersectsRect(this->player->getTarget()->getBoundingBox())) {
 				player->getTarget()->hurt();
 			}
+			this->hit = 1;
 		}
 		else return;
 	}
@@ -65,7 +68,9 @@ void EnemyBullet::explosion(Ref *pSender) {
 	auto mat = this->scene->getMap();
 	auto location = this->scene->tileCoordForPosition(this->getPosition());
 	map->getLayer("Ground")->setTileGID(104, Point(location.x, location.y));
-	mat[(int)location.x][(int)location.y] = BURN;
+	if (mat[(int)location.x][(int)location.y] != ESCAPE || mat[(int)location.x][(int)location.y] != START) {
+		mat[(int)location.x][(int)location.y] = BURN;
+	}
 	this->runAction(FadeOut::create(0.1f));
 	explode->runAction(FadeOut::create(0.5f));
 }
@@ -77,7 +82,9 @@ void EnemyBullet::stun(Ref *pSender) {
 	auto mat1 = this->scene->getMap();
 	auto location = this->scene->tileCoordForPosition(this->getPosition());
 	map1->getLayer("Ground")->setTileGID(289, Point(location.x, location.y));
-	mat1[(int)location.x][(int)location.y] = STUN;
+	if (mat1[(int)location.x][(int)location.y] != ESCAPE || mat1[(int)location.x][(int)location.y] != START) {
+		mat1[(int)location.x][(int)location.y] = STUN;
+	}
 	this->runAction(FadeOut::create(0.1f));
 	gas->runAction(FadeOut::create(1.5f));
 	return;
@@ -157,7 +164,7 @@ void EnemyBullet::update(float dt)
 		hitPlayer();
 	}
 
-	if (deltaTime >= 1.0f) {
+	if (deltaTime >= 1.0f && this->weapon != GRENADE && this->weapon != RADIATION) {
 		auto prevState = this->previousState;
 		if (previousState == MOVING) {
 			this->setState(IDLE);
@@ -169,7 +176,7 @@ void EnemyBullet::update(float dt)
 			auto offset = Point(player->getPosition() - this->getPosition());
 			offset.normalize();
 			if (this->weapon == GUN) {
-				auto shootAmount = offset * 60;
+				auto shootAmount = offset * 80;
 
 				auto realDest = shootAmount + this->getPosition();
 
@@ -203,7 +210,7 @@ void EnemyBullet::update(float dt)
 			}
 
 			else if (this->weapon == KNIFE) {
-				auto shootAmount = offset * 30;
+				auto shootAmount = offset * 50;
 				auto realDest = shootAmount + this->getPosition();
 
 
@@ -227,7 +234,7 @@ void EnemyBullet::update(float dt)
 				this->setState(MOVING);
 				auto offset = Point(player->getPosition() - this->getPosition());
 				offset.normalize();
-				auto shootAmount = offset * 130;
+				auto shootAmount = offset * 150;
 				auto realDest = shootAmount + this->getPosition();
 
 				auto callBack0 = CallFuncN::create(CC_CALLBACK_1(EnemyBullet::explosion, this));
@@ -252,7 +259,7 @@ void EnemyBullet::update(float dt)
 				this->setState(MOVING);
 				auto offset1 = Point(player->getPosition() - this->getPosition());
 				offset1.normalize();
-				auto shootAmount1 = offset1 * 130;
+				auto shootAmount1 = offset1 * 170;
 				auto realDest1 = shootAmount1 + this->getPosition();
 
 				auto callBack3 = CallFuncN::create(CC_CALLBACK_1(EnemyBullet::stun, this));

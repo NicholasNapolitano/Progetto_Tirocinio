@@ -31,6 +31,8 @@ Player* Player::create(const std::string& filename)
 		player->setActualScene(EMPTY);
 		player->setActualWeapon(NO_ONE);
 		player->setCrawlingStrategy(NORMAL);
+		player->platelets = 0;
+		player->objects = 0;
 		return player;
 	}
 	CC_SAFE_DELETE(player);
@@ -85,7 +87,6 @@ void Player::setMovingState(Moving state)
 void Player::update(float dt)
 {
 	deltaTime += dt;
-	totalTime += dt;
 	
 	auto scaleFact = Director::getInstance()->getContentScaleFactor();
 	if (this->life <= 0) {
@@ -131,8 +132,10 @@ void Player::update(float dt)
 				deltaTime = 0;
 			}
 			else if (this->getActualScene() == FIGHT) {
-				if (totalTime >= 20.0f) {
+				totalTime += dt;
+				if (totalTime >= 15.0f) {
 					this->setState(DEFENDING);
+					totalTime = 0;
 				}
 				if (_state == STUNNING) {
 					this->runAction(DelayTime::create(0.5f));
@@ -770,6 +773,7 @@ void Player::gotcha(Item* item) {
 		}
 	}
 
+	this->setObjects(this->getObjects() + 1);
 	this->getMapGame()->getHud()->setScore(this->getMapGame()->getHud()->getScore() + 100);
 
 }
@@ -952,5 +956,21 @@ void Player::setMappa(int** map) {
 
 void Player::setPreviousState(State state) {
 	previousState = state;
+}
+
+int Player::getPlatelets() {
+	return this->platelets;
+}
+
+int Player::getObjects() {
+	return this->objects;
+}
+
+void Player::setPlatelets(int platelets) {
+	this->platelets = platelets;
+}
+
+void Player::setObjects(int objects) {
+	this->objects = objects;
 }
 

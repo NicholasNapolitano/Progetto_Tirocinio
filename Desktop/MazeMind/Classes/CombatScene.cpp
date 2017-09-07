@@ -109,8 +109,8 @@ bool CombatScene::init()
 	auto aux2 = winSize.height;
 
 	container->setScale(1 / layer->getTileAt(Vec2(0, 0))->getScale());
-	container->setScaleX(3.43f * aux/600);
-	container->setScaleY(3.43f * aux2 / 600);
+	container->setScaleX(3.418f * aux / 600);
+	container->setScaleY(3.418f * aux2 / 600);
 
 	this->scheduleUpdate();
 

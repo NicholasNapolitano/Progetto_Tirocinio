@@ -18,6 +18,7 @@ PlayerBullet* PlayerBullet::create(const std::string& filename)
 		//default state
 		bullet->setPreviousState(IDLE);
 		bullet->deltaTime = 3.0f;
+		bullet->hit = 0;
 		return bullet;
 	}
 	CC_SAFE_DELETE(bullet);
@@ -27,7 +28,7 @@ PlayerBullet* PlayerBullet::create(const std::string& filename)
 //Method which described what happens when the PlayerBullet hits the Enemy (based on the Weapon)
 
 void PlayerBullet::hitEnemy() {
-	if (this->weapon == GRENADE){
+	if (this->weapon == GRENADE && this->hit == 0){
 		if (explode != NULL) {
 			if (this->getBoundingBox().intersectsRect(this->enemy->getBoundingBox())) {
 				enemy->hurt();
@@ -35,10 +36,11 @@ void PlayerBullet::hitEnemy() {
 			if (this->getBoundingBox().intersectsRect(this->enemy->getTarget()->getBoundingBox())) {
 				enemy->getTarget()->hurt();
 			}
-        }
+			this->hit = 1;
+		}
 		else return;
 	}
-	else if (this->weapon == RADIATION) {
+	else if (this->weapon == RADIATION && this->hit == 0) {
 		if (gas != NULL) {
 			if (this->getBoundingBox().intersectsRect(this->enemy->getBoundingBox())) {
 				enemy->hurt();
@@ -46,6 +48,7 @@ void PlayerBullet::hitEnemy() {
 			if (this->getBoundingBox().intersectsRect(this->enemy->getTarget()->getBoundingBox())) {
 				enemy->getTarget()->hurt();
 			}
+			this->hit = 1;
 		}
 		else return;
 	}
@@ -65,7 +68,9 @@ void PlayerBullet::explosion(Ref *pSender) {
 	auto mat = this->scene->getMap();
 	auto location = this->scene->tileCoordForPosition(this->getPosition());
 	map->getLayer("Ground")->setTileGID(104, Point(location.x, location.y));
-	mat[(int)location.x][(int)location.y] = BURN;
+	if (mat[(int)location.x][(int)location.y] != ESCAPE || mat[(int)location.x][(int)location.y] != START) {
+		mat[(int)location.x][(int)location.y] = BURN;
+	}
 	this->runAction(FadeOut::create(0.1f));
 	explode->runAction(FadeOut::create(0.5f));
 }
@@ -77,7 +82,9 @@ void PlayerBullet::stun(Ref *pSender) {
 	auto mat1 = this->scene->getMap();
 	auto location = this->scene->tileCoordForPosition(this->getPosition());
 	map1->getLayer("Ground")->setTileGID(289, Point(location.x, location.y));
-	mat1[(int)location.x][(int)location.y] = STUN;
+	if (mat1[(int)location.x][(int)location.y] != ESCAPE || mat1[(int)location.x][(int)location.y] != START) {
+		mat1[(int)location.x][(int)location.y] = STUN;
+	}
 	this->runAction(FadeOut::create(0.1f));
 	gas->runAction(FadeOut::create(1.5f));
 	return;
@@ -162,7 +169,7 @@ void PlayerBullet::update(float dt)
 			auto offset = Point(enemy->getPosition() - this->getPosition());
 			offset.normalize();
 			if (this->weapon == GUN) {
-				auto shootAmount = offset * 60;
+				auto shootAmount = offset * 80;
 				auto realDest = shootAmount + this->getPosition();
 
 				// Move projectile to actual endpoint
@@ -193,7 +200,7 @@ void PlayerBullet::update(float dt)
 			}
 
 			else if (this->weapon == KNIFE) {
-				auto shootAmount = offset * 30;
+				auto shootAmount = offset * 50;
 				auto realDest = shootAmount + this->getPosition();
 
 
@@ -216,7 +223,7 @@ void PlayerBullet::update(float dt)
 				this->setState(MOVING);
 				auto offset = Point(enemy->getPosition() - this->getPosition());
 				offset.normalize();
-				auto shootAmount = offset * 130;
+				auto shootAmount = offset * 150;
 				auto realDest = shootAmount + this->getPosition();
 
 				auto callBack0 = CallFuncN::create(CC_CALLBACK_1(PlayerBullet::explosion, this));
@@ -241,7 +248,7 @@ void PlayerBullet::update(float dt)
 				this->setState(MOVING);
 				auto offset1 = Point(enemy->getPosition() - this->getPosition());
 				offset1.normalize();
-				auto shootAmount1 = offset1 * 130;
+				auto shootAmount1 = offset1 * 170;
 				auto realDest1 = shootAmount1 + this->getPosition();
 
 				auto callBack3 = CallFuncN::create(CC_CALLBACK_1(PlayerBullet::stun, this));
@@ -250,7 +257,7 @@ void PlayerBullet::update(float dt)
 				// Move projectile to actual endpoint
 				this->runAction(Sequence::create(
 					MoveTo::create(0.5f, realDest1),
-					DelayTime::create(0.4f), callBack4, DelayTime::create(0.09f), callBack3, DelayTime::create(1.5f), callBack5, nullptr));
+					DelayTime::create(0.4f), callBack4, DelayTime::create(0.05f), callBack3, DelayTime::create(1.5f), callBack5, nullptr));
 			}
 			deltaTime = 0;
 		}

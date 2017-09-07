@@ -11,6 +11,7 @@ public:
     
 	static SoundManager* getInstance();
 
+	void startPresentationMusic();
 	void startMenuMusic();
 	void startGameMusic();
 	void startBattleMusic();
