@@ -498,7 +498,7 @@ void StrategyManager::scoutBehaviour(Enemy* enemy) {
 	if (enemy->getActualScene() == EXPLORATION) {
 		enemy->lookingAround();
 		auto diff = enemy->getTarget()->getPosition() - enemy->getPosition();
-		if (abs(diff.x) < 50 || abs(diff.x) < 50) {
+		if (abs(diff.x) < 200 || abs(diff.x) < 200) {
 			enemy->setState(ATTACKING);
 			auto dest = enemy->getTarget()->getPosition();
 			auto location = enemy->getPosition();

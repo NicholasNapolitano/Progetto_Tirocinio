@@ -45,7 +45,7 @@ bool CombatScene::init()
 	Point center = Point(winSize.width + origin.x, winSize.height + origin.y);
 
 	tile = TMXTiledMap::create("Arena.tmx");
-	tile->setPosition(Vec2(origin.x + 2, origin.y + 2));
+	tile->setPosition(Vec2(origin.x, origin.y));
 	layer = tile->getLayer("Ground");
 	container->addChild(tile, 1, "Mappa");
 
@@ -105,6 +105,12 @@ bool CombatScene::init()
 
 	this->resizeMap();
 
+	auto aux = winSize.width;
+	auto aux2 = winSize.height;
+
+	container->setScale(1 / layer->getTileAt(Vec2(0, 0))->getScale());
+	container->setScaleX(3.43f * aux/600);
+	container->setScaleY(3.43f * aux2 / 600);
 
 	this->scheduleUpdate();
 
@@ -132,10 +138,10 @@ void CombatScene::update(float dt)
 
 		Size winSize = Director::getInstance()->getWinSize();
 
-		int x = MAX(position.x, winSize.width / 2);
-		int y = MAX(position.y, winSize.height / 2);
-		x = MIN(x, (MAP_SIZE_WIDTH)-winSize.width / 2);
-		y = MIN(y, (MAP_SIZE_HEIGHT)-winSize.height / 2);
+		int x = MAX(position.x * (layer->getTileAt(Vec2(0, 0))->getContentSize().width / 25), winSize.width / 2);
+		int y = MAX(position.y * (layer->getTileAt(Vec2(0, 0))->getContentSize().width / 25), winSize.height / 2);
+		x = MIN(x, (MAP_SIZE_WIDTH * (layer->getTileAt(Vec2(0, 0))->getContentSize().width / 25)) - winSize.width / 2);
+		y = MIN(y, (MAP_SIZE_HEIGHT * (layer->getTileAt(Vec2(0, 0))->getContentSize().width / 25)) - winSize.height / 2);
 		Point actualPosition = Point(x, y);
 
 		Point centerOfView = Point(winSize.width / 2, winSize.height / 2);

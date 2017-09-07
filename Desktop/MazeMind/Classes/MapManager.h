@@ -72,8 +72,8 @@ private:
 	Node* container;
 	GameManager* core;
 	StrategyMenu* strategy;
-	Item* objects[7];
-	Enemy* enemies[7];
+	Item* objects[10];
+	Enemy* enemies[10];
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(MapManager);

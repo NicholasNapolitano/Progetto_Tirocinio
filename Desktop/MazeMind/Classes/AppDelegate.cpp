@@ -19,7 +19,7 @@ using namespace CocosDenshion;
 USING_NS_CC;
 
 static cocos2d::Size designResolutionSize = cocos2d::Size(600, 600);
-static cocos2d::Size smallResolutionSize = cocos2d::Size(300, 200);
+static cocos2d::Size smallResolutionSize = cocos2d::Size(300, 225);
 static cocos2d::Size mediumResolutionSize = cocos2d::Size(1024, 768);
 static cocos2d::Size largeResolutionSize = cocos2d::Size(2048, 1536);
 
@@ -76,12 +76,12 @@ bool AppDelegate::applicationDidFinishLaunching() {
     glview->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, ResolutionPolicy::FIXED_HEIGHT);
     auto frameSize = glview->getFrameSize();
     // if the frame's height is larger than the height of medium size.
-    if (frameSize.height > mediumResolutionSize.height)
+    if (frameSize.height >= mediumResolutionSize.height)
     {
         director->setContentScaleFactor(MIN(largeResolutionSize.height/designResolutionSize.height, largeResolutionSize.width/designResolutionSize.width));
     }
     // if the frame's height is larger than the height of small size.
-    else if (frameSize.height > smallResolutionSize.height)
+    else if (frameSize.height >= smallResolutionSize.height)
     {
         director->setContentScaleFactor(MIN(mediumResolutionSize.height/designResolutionSize.height, mediumResolutionSize.width/designResolutionSize.width));
     }
@@ -92,6 +92,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
     }
 
     register_all_packages();
+
+	glview->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, ResolutionPolicy::FIXED_WIDTH);
 
     // create a scene. it's an autorelease object
 

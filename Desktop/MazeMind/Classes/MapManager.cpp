@@ -120,6 +120,8 @@ bool MapManager::init()
 	this->scheduleUpdate();
 	_player->scheduleUpdate();
 
+	container->setScale(1/layer->getTileAt(Vec2(0, 0))->getScale());
+
 	return true;
 }
 
@@ -147,10 +149,10 @@ void MapManager::update(float dt)
 
 	    Size winSize = Director::getInstance()->getWinSize();
 
-		int x = MAX(position.x, winSize.width / 2);
-		int y = MAX(position.y, winSize.height / 2);
-		x = MIN(x, (MAP_SIZE_WIDTH)-winSize.width / 2);
-		y = MIN(y, (MAP_SIZE_HEIGHT)-winSize.height / 2);
+		int x = MAX(position.x * (layer->getTileAt(Vec2(0, 0))->getContentSize().width / 25), winSize.width / 2);
+		int y = MAX(position.y * (layer->getTileAt(Vec2(0, 0))->getContentSize().width / 25), winSize.height / 2);
+		x = MIN(x, (MAP_SIZE_WIDTH * (layer->getTileAt(Vec2(0, 0))->getContentSize().width / 25))-winSize.width / 2);
+		y = MIN(y, (MAP_SIZE_HEIGHT * (layer->getTileAt(Vec2(0, 0))->getContentSize().width / 25))-winSize.height / 2);
 		Point actualPosition = Point(x, y);
 
 		Point centerOfView = Point(winSize.width / 2, winSize.height / 2);
@@ -612,9 +614,9 @@ void MapManager::resizeMap() {
 //Method which loads pseudo-randomly some enemies on the Scene
 
 void MapManager::positionEnemies() {
-	int randomEnemies = RandomHelper::random_int(0, 3);
+	int randomEnemies = RandomHelper::random_int(0, 9);
 	for (int i = 0; i <= randomEnemies; i++) {
-		EnemyType randomTypeEnemy = (EnemyType)RandomHelper::random_int(0, 6);
+		EnemyType randomTypeEnemy = (EnemyType)RandomHelper::random_int(0, 3);
 		if (randomTypeEnemy == SENTRY) {
 			enemies[i] = Enemy::create("Sentry.png");
 			enemies[i]->setScale(25 / layer->getTileAt(Vec2(0, 0))->getContentSize().width);
@@ -710,7 +712,7 @@ void MapManager::positionEnemies() {
 //Method which loads pseudo-randomly some items on the Scene
 
 void MapManager::positionObjects() {
-	int randomObjects = RandomHelper::random_int(0, 6);
+	int randomObjects = RandomHelper::random_int(0, 9);
 	for (int i = 0; i <= randomObjects; i++) {
 		Thing randomTypeObject = (Thing)RandomHelper::random_int(1, 4);
 		if (randomTypeObject == CURE) {
