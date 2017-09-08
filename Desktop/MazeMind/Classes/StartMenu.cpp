@@ -30,7 +30,7 @@ bool StartMenu::init()
 	{
 		return false;
 	}
-	
+	this->deltaTime = 0;
 	float scaleFactor = Director::getInstance()->getContentScaleFactor();
 	this->core = GameManager::getInstance();
 	auto visibleSize = Director::getInstance()->getVisibleSize();
@@ -98,9 +98,24 @@ bool StartMenu::init()
 	menu->setPosition(Point(0, 0));
 	this->addChild(menu, 1);
 
+	this->scheduleUpdate();
+
 	return true;
 
 }
+
+//Method to schedule StartMenu every frame
+
+void StartMenu::update(float dt) {
+
+	deltaTime += dt;
+	if (deltaTime >= 70.0f) {
+		core->startPresentation();
+	}
+    
+	return;
+}
+
 
 //Method which asks GameManager to push StrategyMenu scene
 

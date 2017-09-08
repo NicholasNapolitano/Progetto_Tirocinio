@@ -96,7 +96,7 @@ void StrategyManager::distanceAttack(Player* player) {
 	if (player->getTarget() != NULL) {
 		player->lookingAround();
 		auto diff1 = player->getTarget()->getPosition() - player->getPosition();
-		if (((abs(diff1.x) >= 50 || abs(diff1.y) >= 50) && (player->getActualWeapon() == GUN)) || ((abs(diff1.x) >= 100 || abs(diff1.y) >= 100) && (player->getActualWeapon() == RIFLE)) || ((abs(diff1.x) >= 150 || abs(diff1.y) >= 150) && (player->getActualWeapon() == SNIPER)) || ((abs(diff1.x) >= 120 || abs(diff1.y) >= 120) && (player->getActualWeapon() == GRENADE)) || ((abs(diff1.x) >= 25 || abs(diff1.y) >= 25) && (player->getActualWeapon() == KNIFE)) || ((abs(diff1.x) >= 120 || abs(diff1.y) >= 120) && (player->getActualWeapon() == RADIATION))) {
+		if (((abs(diff1.x) >= 60 || abs(diff1.y) >= 60) && (player->getActualWeapon() == GUN)) || ((abs(diff1.x) >= 100 || abs(diff1.y) >= 100) && (player->getActualWeapon() == RIFLE)) || ((abs(diff1.x) >= 150 || abs(diff1.y) >= 150) && (player->getActualWeapon() == SNIPER)) || ((abs(diff1.x) >= 120 || abs(diff1.y) >= 120) && (player->getActualWeapon() == GRENADE)) || ((abs(diff1.x) >= 30 || abs(diff1.y) >= 30) && (player->getActualWeapon() == KNIFE)) || ((abs(diff1.x) >= 140 || abs(diff1.y) >= 140) && (player->getActualWeapon() == RADIATION))) {
 			player->setState(ATTACKING);
 			player->startAttacking();
 			player->setDeltaTime(0);
@@ -180,25 +180,6 @@ void StrategyManager::be_Patient(Player* player) {
 		else {
 			player->setState(MOVING);
 			auto fakePos = player->getTarget()->getPosition() - player->getPosition();
-			/*if (fakePos.x > 50 || fakePos.y > 50) {
-			if (abs(fakePos.x) > abs(fakePos.y)) {
-			if (fakePos.x > 50) {
-			this->setMovingState(MOVE_RIGHT);
-			}
-			else {
-			this->setMovingState(MOVE_LEFT);
-			}
-			}
-			else {
-			if (fakePos.y > 50) {
-			this->setMovingState(MOVE_UP);
-			}
-			else {
-			this->setMovingState(MOVE_DOWN);
-			}
-			}
-			}
-			else{*/
 			if (fakePos.x < 20 || fakePos.y < 20) {
 				Moving move = (Moving)RandomHelper::random_int(0, 1);
 				if (move == MOVE_UP) {
@@ -358,7 +339,7 @@ void StrategyManager::sentryBehaviour(Enemy* enemy) {
 		  }
 		}
 		auto diff = enemy->getTarget()->getPosition() - enemy->getPosition();
-		if (((abs(diff.x) < 100 || abs(diff.x) < 100) && enemy->getActualWeapon() == RIFLE) || ((abs(diff.x) < 50 || abs(diff.x) < 50) && enemy->getActualWeapon() == GUN)){
+		if (((abs(diff.x) <= 60 || abs(diff.y) <= 60) && (enemy->getActualWeapon() == GUN)) || ((abs(diff.x) <= 120 || abs(diff.y) <= 120) && (enemy->getActualWeapon() == RIFLE)) || ((abs(diff.x) <= 20 || abs(diff.y) <= 20) && (enemy->getActualWeapon() == KNIFE))) {
 			enemy->setState(ATTACKING);
 			enemy->startAttacking();
 			enemy->setDeltaTime(0);
@@ -560,7 +541,7 @@ void StrategyManager::scoutBehaviour(Enemy* enemy) {
 			auto meta = Point(6, 6);
 			if (enemy->getTarget() != NULL) {
 				auto diff2 = enemy->getTarget()->getPosition() - enemy->getPosition();
-				if (((abs(diff2.x) <= 80 || abs(diff2.y) <= 80))) {
+				if (((abs(diff2.x) <= 30 || abs(diff2.y) <= 30))) {
 				enemy->setState(ATTACKING);
 				enemy->startAttacking();
 				enemy->setDeltaTime(0);

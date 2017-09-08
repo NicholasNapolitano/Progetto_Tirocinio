@@ -100,6 +100,7 @@ void Enemy::update(float dt)
 		this->controlPosition(this->getPosition());
 	}
 	if (this->getActualScene() == FIGHT) {
+		totalTime += dt;
 		if (map[(int)tileCoord.x][(int)tileCoord.y] == START) {
 			this->getParent()->unscheduleAllCallbacks();
 			SoundManager::getInstance()->startWinSound();

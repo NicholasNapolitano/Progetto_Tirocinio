@@ -80,7 +80,7 @@ bool PresentationLayer::init()
 			DelayTime::create(15.0f),
 			CallFunc::create(this,
 				callfunc_selector(PresentationLayer::startPart3)),
-			DelayTime::create(10.0f),
+			DelayTime::create(12.0f),
 			CallFunc::create(this,
 				callfunc_selector(PresentationLayer::finish)),
 			DelayTime::create(1.5f),

@@ -19,6 +19,7 @@ public:
 private:
 	GameManager* core;
 	cocos2d::Sprite* background;
+	cocos2d::Label* current;
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(HighScoreScene);

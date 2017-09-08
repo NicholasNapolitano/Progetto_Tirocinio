@@ -100,13 +100,21 @@ bool HighScoreScene::init()
 
 	def->flush();
 
-
 	String* tempHighScore = __String::createWithFormat("%d", highScore);
 	auto highScoreLabel = LabelTTF::create(tempHighScore->getCString(), "fonts/Marker Felt.ttf", 32);
 	highScoreLabel->setPosition(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2);
 	highScoreLabel->setColor(Color3B::YELLOW);
 	highScoreLabel->setScale(highScoreLabel->getScale() / scaleFactor);
 	this->addChild(highScoreLabel);
+
+	current = Label::createWithTTF("CURRENT HIGHSCORE", "fonts/Marker Felt.ttf", 50);
+
+	// position the label on the center of the screen
+	current->setPosition(Point(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2 + highScoreLabel->getContentSize().height*3));
+	current->setTextColor(Color4B::YELLOW);
+	current->setScale(current->getScale() / scaleFactor);
+	// add the label as a child to this layer
+	this->addChild(current, 1);
 
 	return true;
 

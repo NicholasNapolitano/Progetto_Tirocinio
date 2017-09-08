@@ -160,16 +160,20 @@ void GameManager::changeSettings() {
 	Director::getInstance()->pushScene(TransitionFlipY::create(1.0f, scene));
 }
 
+//Add extra score to the player according to some hidden achievements
+
 void GameManager::setExtraScore(Player* player) {
 
 	Protection protect = player->getActualProtection();
 
+	//Achevement: BRAVE
 	if (protect == ANYTHING) {
 		player->getMapGame()->getHud()->setScore(player->getMapGame()->getHud()->getScore() + 150);
 	}
 		    
 	Weapon weapon = player->getActualWeapon();
 
+	//Achievement: CRAZY
 	if (weapon == NO_ONE) {
 		player->getMapGame()->getHud()->setScore(player->getMapGame()->getHud()->getScore() + 300);
 	}
@@ -179,10 +183,12 @@ void GameManager::setExtraScore(Player* player) {
 
 	Crawling strategy = player->getCrawlingStrategy();
 	
+	//Achievement: CURIOUS
 	if (strategy == NORMAL) {
 		player->getMapGame()->getHud()->setScore(player->getMapGame()->getHud()->getScore() + 500);
 	}
 
+	//Achievemnt: PACIFIST
 	int platelets = player->getPlatelets();
 	if (platelets == 0) {
 		player->getMapGame()->getHud()->setScore(player->getMapGame()->getHud()->getScore() + 200);
@@ -191,6 +197,7 @@ void GameManager::setExtraScore(Player* player) {
 		player->getMapGame()->getHud()->setScore(player->getMapGame()->getHud()->getScore() + 50 * platelets);
 	}
 
+	//Achievement: ORIGINAL
 	int objects = player->getObjects();
 	if (objects == 0) {
 		player->getMapGame()->getHud()->setScore(player->getMapGame()->getHud()->getScore() + 200);
@@ -202,6 +209,8 @@ void GameManager::setExtraScore(Player* player) {
 
 	return;
 }
+
+//Go To PresentationScene
 
 void GameManager::startPresentation() {
 	auto scene = PresentationScene::create();

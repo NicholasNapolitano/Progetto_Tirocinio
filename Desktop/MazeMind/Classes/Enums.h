@@ -43,9 +43,9 @@ enum Weapon {
 	NO_ONE,
 	GUN,
 	RIFLE,
+	KNIFE,
 	SNIPER,
 	GRENADE,
-	KNIFE,
 	RADIATION
 };
 

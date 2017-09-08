@@ -14,6 +14,7 @@ public:
 	void play(Ref *pSender);
 	void highscore(Ref *pSender);
 	void settings(Ref *pSender);
+	void update(float dt) override;
 
 	// a selector callback
 	void menuCloseCallback(cocos2d::Ref* pSender);
@@ -21,6 +22,7 @@ public:
 private:
 	GameManager* core;
 	cocos2d::Sprite* background;
+	float deltaTime;
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(StartMenu);

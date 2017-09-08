@@ -31,6 +31,7 @@ Player* Player::create(const std::string& filename)
 		player->setActualScene(EMPTY);
 		player->setActualWeapon(NO_ONE);
 		player->setCrawlingStrategy(NORMAL);
+		player->setStrategy(DEFEAT_ENEMY);
 		player->platelets = 0;
 		player->objects = 0;
 		return player;

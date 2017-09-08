@@ -40,7 +40,7 @@ void PlayerBullet::hitEnemy() {
 		}
 		else return;
 	}
-	else if (this->weapon == RADIATION && this->hit == 0) {
+	else if (this->weapon == RADIATION) {
 		if (gas != NULL) {
 			if (this->getBoundingBox().intersectsRect(this->enemy->getBoundingBox())) {
 				enemy->hurt();
@@ -48,7 +48,6 @@ void PlayerBullet::hitEnemy() {
 			if (this->getBoundingBox().intersectsRect(this->enemy->getTarget()->getBoundingBox())) {
 				enemy->getTarget()->hurt();
 			}
-			this->hit = 1;
 		}
 		else return;
 	}
