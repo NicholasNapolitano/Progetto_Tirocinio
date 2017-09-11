@@ -74,6 +74,7 @@ bool StrategyMenu::init()
 
 
 	this->player = Player::create("Player.png");
+	this->addChild(player);
 	/////////////////////////////
 	// 2. add a menu item with "X" image, which is clicked to quit the program
 	//    you may modify it.
@@ -221,6 +222,8 @@ void StrategyMenu::enjoyTheGame(Ref *pSender)
 void StrategyMenu::normal(Ref* pSender) {
 	log("Normal");
 	this->player->setCrawlingStrategy(NORMAL);
+	this->player->setCrawlingStrategy(NORMAL);
+	this->player->setCrawlingStrategy(NORMAL);
 	crawlingSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 8, (visibleSize.height / 1.15) * 3));
 	SoundManager::getInstance()->startNormalExplorationChosenSound();
 	return;
@@ -228,6 +231,8 @@ void StrategyMenu::normal(Ref* pSender) {
 
 void StrategyMenu::goToTheGoal(Ref* pSender) {
 	log("Go_To_The_Goal");
+	this->player->setCrawlingStrategy(GO_TO_GOAL);
+	this->player->setCrawlingStrategy(GO_TO_GOAL);
 	this->player->setCrawlingStrategy(GO_TO_GOAL);
 	crawlingSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 4, (visibleSize.height / 1.20) * 3));
 	SoundManager::getInstance()->startGoToTheGoalExplorationChosenSound();
@@ -240,6 +245,8 @@ void StrategyMenu::gun(Ref *pSender)
 {
 	log("Gun");
 	this->player->setActualWeapon(GUN);
+	this->player->setActualWeapon(GUN);
+	this->player->setActualWeapon(GUN);
 	weaponSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 8, (visibleSize.height / 1.30) * 3));
 	SoundManager::getInstance()->startGunChosenSound();
 	return;
@@ -248,6 +255,8 @@ void StrategyMenu::gun(Ref *pSender)
 void StrategyMenu::rifle(Ref *pSender)
 {
 	log("Rifle");
+	player->setActualWeapon(RIFLE);
+	player->setActualWeapon(RIFLE);
 	player->setActualWeapon(RIFLE);
 	weaponSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 8, (visibleSize.height / 1.35) * 3));
 	SoundManager::getInstance()->startRifleChosenSound();
@@ -258,6 +267,8 @@ void StrategyMenu::sniper(Ref *pSender)
 {
 	log("Sniper");
 	player->setActualWeapon(SNIPER);
+	player->setActualWeapon(SNIPER);
+	player->setActualWeapon(SNIPER);
 	weaponSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 8, (visibleSize.height / 1.40) * 3));
 	SoundManager::getInstance()->startSniperChosenSound();
 	return;
@@ -266,6 +277,8 @@ void StrategyMenu::sniper(Ref *pSender)
 void StrategyMenu::grenade(Ref *pSender)
 {
 	log("Grenade");
+	player->setActualWeapon(GRENADE);
+	player->setActualWeapon(GRENADE);
 	player->setActualWeapon(GRENADE);
 	weaponSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 8, (visibleSize.height / 1.45) * 3));
 	SoundManager::getInstance()->startGrenadeChosenSound();
@@ -276,6 +289,8 @@ void StrategyMenu::knife(Ref *pSender)
 {
 	log("Knife");
 	player->setActualWeapon(KNIFE);
+	player->setActualWeapon(KNIFE);
+	player->setActualWeapon(KNIFE);
 	weaponSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width/ 8, (visibleSize.height / 1.50) * 3));
 	SoundManager::getInstance()->startKnifeChosenSound();
 	return;
@@ -284,6 +299,8 @@ void StrategyMenu::knife(Ref *pSender)
 void StrategyMenu::radiation(Ref *pSender)
 {
 	log("Radiation");
+	player->setActualWeapon(RADIATION);
+	player->setActualWeapon(RADIATION);
 	player->setActualWeapon(RADIATION);
 	weaponSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 8, (visibleSize.height / 1.55) * 3));
 	SoundManager::getInstance()->startRadiationChosenSound();
@@ -296,6 +313,8 @@ void StrategyMenu::defeatEnemy(Ref *pSender)
 {
 	log("Defeat_Enemy");
 	player->setStrategy(DEFEAT_ENEMY);
+	player->setStrategy(DEFEAT_ENEMY);
+	player->setStrategy(DEFEAT_ENEMY);
 	strategySelected->setPosition(Point(visibleSize.width /2 + visibleSize.width / 4, (visibleSize.height / 1.65) * 3));
 	SoundManager::getInstance()->startDefeatEnemyChosenSound();
 	return;
@@ -304,6 +323,8 @@ void StrategyMenu::defeatEnemy(Ref *pSender)
 void StrategyMenu::distanceAttack(Ref *pSender)
 {
 	log("Distance_Attack");
+	player->setStrategy(DISTANCE_ATTACK);
+	player->setStrategy(DISTANCE_ATTACK);
 	player->setStrategy(DISTANCE_ATTACK);
 	strategySelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 4, (visibleSize.height / 1.75) * 3));
 	SoundManager::getInstance()->startDistanceAttackChosenSound();
@@ -314,6 +335,8 @@ void StrategyMenu::retreat(Ref *pSender)
 {
 	log("Retreat");
 	player->setStrategy(RETREAT);
+	player->setStrategy(RETREAT);
+	player->setStrategy(RETREAT);
 	strategySelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 4, (visibleSize.height / 1.85) * 3));
 	SoundManager::getInstance()->startRetreatChosenSound();
 	return;
@@ -323,6 +346,8 @@ void StrategyMenu::bePatient(Ref *pSender)
 {
 	log("Be_Patient");
 	player->setStrategy(BE_PATIENT);
+	player->setStrategy(BE_PATIENT);
+	player->setStrategy(BE_PATIENT);
 	strategySelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 4, (visibleSize.height / 1.95) * 3));
 	SoundManager::getInstance()->startBePatientChosenSound();
 	return;
@@ -331,6 +356,8 @@ void StrategyMenu::bePatient(Ref *pSender)
 void StrategyMenu::stunEnemy(Ref *pSender)
 {
 	log("Stun_Enemy");
+	player->setStrategy(STUN_ENEMY);
+	player->setStrategy(STUN_ENEMY);
 	player->setStrategy(STUN_ENEMY);
 	strategySelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 4, (visibleSize.height / 2.05) * 3));
 	SoundManager::getInstance()->startStunEnemyChosenSound();
@@ -343,6 +370,8 @@ void StrategyMenu::shield(Ref *pSender)
 {
 	log("SHIELD");
 	player->setActualProtection(SHIELD);
+	player->setActualProtection(SHIELD);
+	player->setActualProtection(SHIELD);
 	protectionSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 13, (visibleSize.height / 2.30) * 3));
 	SoundManager::getInstance()->startShieldChosenSound();
 	return;
@@ -351,6 +380,8 @@ void StrategyMenu::shield(Ref *pSender)
 void StrategyMenu::armor(Ref *pSender)
 {
 	log("ARMOR");
+	player->setActualProtection(ARMOR);
+	player->setActualProtection(ARMOR);
 	player->setActualProtection(ARMOR);
 	protectionSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 13, (visibleSize.height / 2.60) * 3));
 	SoundManager::getInstance()->startArmorChosenSound();
@@ -361,6 +392,8 @@ void StrategyMenu::mask(Ref *pSender)
 {
 	log("MASK");
 	player->setActualProtection(MASK);
+	player->setActualProtection(MASK);
+	player->setActualProtection(MASK);
 	protectionSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 13, (visibleSize.height / 2.90) * 3));
 	SoundManager::getInstance()->startMaskChosenSound();
 	return;
@@ -369,6 +402,8 @@ void StrategyMenu::mask(Ref *pSender)
 void StrategyMenu::armguard(Ref *pSender)
 {
 	log("Armguard");
+	player->setActualProtection(ARMGUARD);
+	player->setActualProtection(ARMGUARD);
 	player->setActualProtection(ARMGUARD);
 	protectionSelected->setPosition(Point(visibleSize.width / 2 + visibleSize.width / 13, (visibleSize.height / 3.40) * 3));
 	SoundManager::getInstance()->startArmguardChosenSound();

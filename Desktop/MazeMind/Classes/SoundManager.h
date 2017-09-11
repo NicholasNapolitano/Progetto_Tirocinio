@@ -28,6 +28,8 @@ public:
 	void startHurtScream();
 	void stopMusic();
 	void stopEffects();
+	void pauseMusic();
+	void pauseEffects();
 	void resumeMusic();
 	void resumeEffects();
 	void startGunChosenSound();

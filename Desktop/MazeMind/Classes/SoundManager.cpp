@@ -236,6 +236,8 @@ void SoundManager::startGoToTheGoalExplorationChosenSound()
 	audio->playEffect("GoToTheGoal.mp3");
 }
 
+//Stop Music
+
 void SoundManager::stopMusic()
 {
 	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
@@ -248,6 +250,22 @@ void SoundManager::stopEffects()
 {
 	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
 	audio->stopAllEffects();
+}
+
+//Pause Music
+
+void SoundManager::pauseMusic()
+{
+	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	audio->pauseBackgroundMusic();
+}
+
+//Pause all Sound Effects
+
+void SoundManager::pauseEffects()
+{
+	auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+	audio->pauseAllEffects();
 }
 
 //Resume all Sound Effects

@@ -31,7 +31,7 @@ Player* Player::create(const std::string& filename)
 		player->setActualScene(EMPTY);
 		player->setActualWeapon(NO_ONE);
 		player->setCrawlingStrategy(NORMAL);
-		player->setStrategy(DEFEAT_ENEMY);
+		player->setStrategy(RETREAT);
 		player->platelets = 0;
 		player->objects = 0;
 		return player;
@@ -137,9 +137,6 @@ void Player::update(float dt)
 				if (totalTime >= 15.0f) {
 					this->setState(DEFENDING);
 					totalTime = 0;
-				}
-				if (_state == STUNNING) {
-					this->runAction(DelayTime::create(0.5f));
 				}
 				else if (_state == DEFENDING) {
 					StrategyManager::getInstance()->defensiveAsset(this);
@@ -662,6 +659,7 @@ void Player::hurt() {
 		}
 		else {
 			this->setState(STUNNING);
+			this->runAction(DelayTime::create(0.5f));
 			return;
 		}
 	}

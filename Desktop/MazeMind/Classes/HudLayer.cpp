@@ -31,8 +31,8 @@ HudLayer::HudLayer(){
 		}
 	});
 
-	button->setPosition(Vec2(origin.x + visibleSize.width, origin.y + visibleSize.height));
-	button->setAnchorPoint(Vec2(1, 1));
+	button->setPosition(Vec2(origin.x + visibleSize.width, origin.y));
+	button->setAnchorPoint(Vec2(1, 0));
 	this->addChild(button, 1);
 
 	closeButton = ui::Button::create("closeNormal.png", "closeSelected.png");
@@ -52,8 +52,8 @@ HudLayer::HudLayer(){
 		}
 	});
 
-	closeButton->setPosition(Vec2(origin.x + visibleSize.width, origin.y));
-	closeButton->setAnchorPoint(Point(1, 0));
+	closeButton->setPosition(Vec2(origin.x + visibleSize.width, origin.y + visibleSize.height));
+	closeButton->setAnchorPoint(Point(1, 1));
 	this->addChild(closeButton, 1);
 
 	score = Label::createWithTTF("SCORE: ", "fonts/Marker Felt.ttf", 32);

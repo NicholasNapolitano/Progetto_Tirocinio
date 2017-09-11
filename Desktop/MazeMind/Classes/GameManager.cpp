@@ -52,10 +52,10 @@ void GameManager::selectStrategy() {
 void GameManager::playGame(Player* player) {
 	Scene* scene = MapManager::createScene();
 	MapManager* gameScene = (MapManager*)scene->getChildByName("MapManager");
+	gameScene->getPlayer()->setCrawlingStrategy(player->getCrawlingStrategy());
 	gameScene->getPlayer()->setStrategy(player->getStrategy());
 	gameScene->getPlayer()->setActualWeapon(player->getActualWeapon());
 	gameScene->getPlayer()->setActualProtection(player->getActualProtection());
-	gameScene->getPlayer()->setCrawlingStrategy(player->getCrawlingStrategy());
 	Director::getInstance()->pushScene(scene);
 	SoundManager::getInstance()->startGameMusic();
 }
@@ -93,8 +93,8 @@ void GameManager::startBattle(Enemy* enemy, Player* player) {
 
 void GameManager::pauseGame() {
 	Director::getInstance()->pause();
-	SoundManager::getInstance()->stopMusic();
-	SoundManager::getInstance()->stopEffects();
+	SoundManager::getInstance()->pauseMusic();
+	SoundManager::getInstance()->pauseEffects();
 }
 
 //Resume the Game
@@ -134,9 +134,11 @@ void GameManager::endGame() {
 //Return to the Menu
 
 void GameManager::restartGame() {
-	auto scene = StartMenu::createScene();
-	Director::getInstance()->replaceScene(scene);
 	SoundManager::getInstance()->stopMusic();
+	Director::getInstance()->popScene();
+	Director::getInstance()->popScene();
+	auto scene = StartMenu::createScene();
+	Director::getInstance()->pushScene(scene);
 	SoundManager::getInstance()->startMenuMusic();
 }
 
@@ -178,6 +180,7 @@ void GameManager::setExtraScore(Player* player) {
 		player->getMapGame()->getHud()->setScore(player->getMapGame()->getHud()->getScore() + 300);
 	}
 
+	//Achivement: GOOD_HEALTH
 	int life = player->getLife();
 	player->getMapGame()->getHud()->setScore(player->getMapGame()->getHud()->getScore() + 50 * life);
 
@@ -185,10 +188,10 @@ void GameManager::setExtraScore(Player* player) {
 	
 	//Achievement: CURIOUS
 	if (strategy == NORMAL) {
-		player->getMapGame()->getHud()->setScore(player->getMapGame()->getHud()->getScore() + 500);
+		player->getMapGame()->getHud()->setScore(player->getMapGame()->getHud()->getScore() + 1000);
 	}
 
-	//Achievemnt: PACIFIST
+	//Achievement: PACIFIST / GENOCIDE
 	int platelets = player->getPlatelets();
 	if (platelets == 0) {
 		player->getMapGame()->getHud()->setScore(player->getMapGame()->getHud()->getScore() + 200);
@@ -197,7 +200,7 @@ void GameManager::setExtraScore(Player* player) {
 		player->getMapGame()->getHud()->setScore(player->getMapGame()->getHud()->getScore() + 50 * platelets);
 	}
 
-	//Achievement: ORIGINAL
+	//Achievement: ORIGINAL / PICKER
 	int objects = player->getObjects();
 	if (objects == 0) {
 		player->getMapGame()->getHud()->setScore(player->getMapGame()->getHud()->getScore() + 200);

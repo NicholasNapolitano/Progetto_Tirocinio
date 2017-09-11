@@ -104,6 +104,7 @@ void Enemy::update(float dt)
 		if (map[(int)tileCoord.x][(int)tileCoord.y] == START) {
 			this->getParent()->unscheduleAllCallbacks();
 			SoundManager::getInstance()->startWinSound();
+			this->getMapFight()->getHud()->setScore(this->getMapFight()->getHud()->getScore() + 150);
 			this->getMapFight()->finishBattle();
 			return;
 		}
@@ -122,10 +123,6 @@ void Enemy::update(float dt)
 		if (previousState == MOVING || previousState == ATTACKING || previousState == DEFENDING || previousState == STUNNING) {
 			this->setState(IDLE);
 			return;
-		}
-		if (_state == STUNNING) {
-			this->runAction(DelayTime::create(0.5f));
-
 		}
 		if (previousState == IDLE) {
 			if (this->getType() == SENTRY) {
@@ -523,6 +520,7 @@ void Enemy::hurt() {
 		}
 		else {
 			this->setState(STUNNING);
+			this->runAction(DelayTime::create(0.5f));
 			return;
 		}
 	}
