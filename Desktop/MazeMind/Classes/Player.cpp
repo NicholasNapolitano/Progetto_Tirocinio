@@ -108,9 +108,9 @@ void Player::update(float dt)
 			return;
 		}
 	}
-	if (deltaTime >= 0.5f) {
+	if (deltaTime >= 0.5f && this->getState() != STUNNING) {
 		auto prevState = this->previousState;
-		if (previousState == MOVING || previousState == ATTACKING || previousState == DEFENDING || previousState == STUNNING) {
+		if (previousState == MOVING || previousState == ATTACKING || previousState == DEFENDING) {
 			this->setState(IDLE);
 			return;
 		}
@@ -133,7 +133,7 @@ void Player::update(float dt)
 				deltaTime = 0;
 			}
 			else if (this->getActualScene() == FIGHT) {
-				totalTime += dt;
+				totalTime += 0.5f + dt;
 				if (totalTime >= 15.0f) {
 					this->setState(DEFENDING);
 					totalTime = 0;
@@ -158,6 +158,11 @@ void Player::update(float dt)
 				}
 			}
 		}
+	}
+	if (deltaTime >= 2.0f && this->getState() == STUNNING) {
+		this->setState(IDLE);
+		deltaTime = 0;
+		return;
 	}
 }
 
@@ -659,7 +664,7 @@ void Player::hurt() {
 		}
 		else {
 			this->setState(STUNNING);
-			this->runAction(DelayTime::create(0.5f));
+			this->runAction(DelayTime::create(2.0f));
 			return;
 		}
 	}

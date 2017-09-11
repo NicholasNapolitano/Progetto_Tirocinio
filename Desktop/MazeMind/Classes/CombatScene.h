@@ -68,6 +68,7 @@ private:
 	Node* container;
 	GameManager* core;
 	MapManager* manager;
+	float totalTime;
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(CombatScene);

@@ -68,7 +68,8 @@ void GameManager::resumeExploration(Player* player) {
 	player->getMapGame()->getHud()->setScore(player->getMapFight()->getHud()->getScore());
 	Director::getInstance()->popScene();
 	player->getMapGame()->getPlayer()->setLife(player->getLife());
-	resumeGame();
+	player->getMapGame()->resume();
+	SoundManager::getInstance()->resumeEffects();
 }
 
 //Go to the CombatScene to start a battle

@@ -35,7 +35,7 @@ bool CombatScene::init()
 	this->core = GameManager::getInstance();
 	this->deltaTime = 0;
 	this->createMap();
-
+	this->totalTime = 0;
 	container = Node::create();
 	this->addChild(container, 4);
 
@@ -125,7 +125,7 @@ void CombatScene::update(float dt)
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	deltaTime += dt;
-
+	totalTime += dt;
 	if (this->getHud()->getScore() == 0) {
 		core->loseGame();
 	}
@@ -148,6 +148,17 @@ void CombatScene::update(float dt)
 		Point viewPoint = Point(centerOfView) - Point(actualPosition);
 		container->runAction(MoveTo::create(0.5f, Vec2(viewPoint.x, viewPoint.y)));
 		deltaTime = 0;
+	}
+
+	if (totalTime > 5.0f) {
+		for (int i = 0; i < ARENA_WIDTH; i++) {
+			for (int j = 0; j < ARENA_HEIGHT; j++) {
+				if (mat[i][j] != START && mat[i][j] != ESCAPE) {
+					mat[i][j] = GROUND;
+				}
+			}
+		}
+		totalTime = 0;
 	}
 
 }

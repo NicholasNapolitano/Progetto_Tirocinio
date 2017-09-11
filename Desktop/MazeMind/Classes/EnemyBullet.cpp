@@ -30,10 +30,10 @@ EnemyBullet* EnemyBullet::create(const std::string& filename)
 void EnemyBullet::hitPlayer() {
 	if (this->weapon == GRENADE && this->hit == 0) {
 		if (explode != NULL) {
-			if (this->getBoundingBox().intersectsRect(this->player->getBoundingBox())) {
+			if (explode->getBoundingBox().intersectsRect(this->player->getBoundingBox())) {
 				player->hurt();
 			}
-			if (this->getBoundingBox().intersectsRect(this->player->getTarget()->getBoundingBox())) {
+			if (explode->getBoundingBox().intersectsRect(this->player->getTarget()->getBoundingBox())) {
 				player->getTarget()->hurt();
 			}
 			this->hit = 1;
@@ -42,10 +42,10 @@ void EnemyBullet::hitPlayer() {
 	}
 	else if (this->weapon == RADIATION) {
 		if (gas != NULL) {
-			if (this->getBoundingBox().intersectsRect(this->player->getBoundingBox())) {
+			if (gas->getBoundingBox().intersectsRect(this->player->getBoundingBox())) {
 				player->hurt();
 			}
-			if (this->getBoundingBox().intersectsRect(this->player->getTarget()->getBoundingBox())) {
+			if (gas->getBoundingBox().intersectsRect(this->player->getTarget()->getBoundingBox())) {
 				player->getTarget()->hurt();
 			}
 		}
@@ -66,9 +66,11 @@ void EnemyBullet::explosion(Ref *pSender) {
 	auto map = this->scene->getTileMap();
 	auto mat = this->scene->getMap();
 	auto location = this->scene->tileCoordForPosition(this->getPosition());
-	map->getLayer("Ground")->setTileGID(104, Point(location.x, location.y));
-	if (mat[(int)location.x][(int)location.y] != ESCAPE || mat[(int)location.x][(int)location.y] != START) {
-		mat[(int)location.x][(int)location.y] = BURN;
+	if (location.x > 0 && location.x < 7 && location.y > 0 && location.y < 7) {
+		map->getLayer("Ground")->setTileGID(104, Point(location.x, location.y));
+		if (mat[(int)location.x][(int)location.y] != ESCAPE || mat[(int)location.x][(int)location.y] != START) {
+			mat[(int)location.x][(int)location.y] = BURN;
+		}
 	}
 	this->runAction(FadeOut::create(0.1f));
 	explode->runAction(FadeOut::create(0.5f));
@@ -80,9 +82,11 @@ void EnemyBullet::stun(Ref *pSender) {
 	auto map1 = this->scene->getTileMap();
 	auto mat1 = this->scene->getMap();
 	auto location = this->scene->tileCoordForPosition(this->getPosition());
-	map1->getLayer("Ground")->setTileGID(289, Point(location.x, location.y));
-	if (mat1[(int)location.x][(int)location.y] != ESCAPE || mat1[(int)location.x][(int)location.y] != START) {
-		mat1[(int)location.x][(int)location.y] = STUN;
+	if (location.x > 0 && location.x < 7 && location.y > 0 && location.y < 7) {
+		map1->getLayer("Ground")->setTileGID(289, Point(location.x, location.y));
+		if (mat1[(int)location.x][(int)location.y] != ESCAPE || mat1[(int)location.x][(int)location.y] != START) {
+			mat1[(int)location.x][(int)location.y] = STUN;
+		}
 	}
 	this->runAction(FadeOut::create(0.1f));
 	gas->runAction(FadeOut::create(1.5f));
@@ -233,7 +237,7 @@ void EnemyBullet::update(float dt)
 				this->setState(MOVING);
 				auto offset = Point(player->getPosition() - this->getPosition());
 				offset.normalize();
-				auto shootAmount = offset * 150;
+				auto shootAmount = offset * 140;
 				auto realDest = shootAmount + this->getPosition();
 
 				auto callBack0 = CallFuncN::create(CC_CALLBACK_1(EnemyBullet::explosion, this));
@@ -258,7 +262,7 @@ void EnemyBullet::update(float dt)
 				this->setState(MOVING);
 				auto offset1 = Point(player->getPosition() - this->getPosition());
 				offset1.normalize();
-				auto shootAmount1 = offset1 * 170;
+				auto shootAmount1 = offset1 * 150;
 				auto realDest1 = shootAmount1 + this->getPosition();
 
 				auto callBack3 = CallFuncN::create(CC_CALLBACK_1(EnemyBullet::stun, this));

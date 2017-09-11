@@ -203,10 +203,8 @@ void StrategyManager::be_Patient(Player* player) {
 void StrategyManager::stun_Enemy(Player* player) {
 	if (player->getTarget() != NULL) {
 		player->lookingAround();
-		if (player->getTarget()->getState() == DEFENDING) {
-			this->defensiveAsset(player);
-		}
-		else if (player->getTarget()->getState() == STUNNING){
+		auto pos = player->getTarget()->getPosition() - player->getPosition();
+		if (player->getTarget()->getState() == STUNNING || pos.x <= 80 || pos.y <= 80){
 			player->setState(MOVING);
 			auto road1 = Point(159, 159) - player->getPosition();
 			if (road1.x >= 0) {
@@ -223,6 +221,9 @@ void StrategyManager::stun_Enemy(Player* player) {
 			}
 			player->setDeltaTime(0);
 			return;
+		}
+		else if (player->getTarget()->getState() == DEFENDING || player->getState() == DEFENDING) {
+			this->defensiveAsset(player);
 		}
 		else {
 			auto diff3 = player->getTarget()->getPosition() - player->getPosition();

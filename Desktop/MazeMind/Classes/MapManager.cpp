@@ -783,6 +783,7 @@ void MapManager::positionObjects() {
 void MapManager::beginBattle(Enemy* enemy) {
 	GameManager::getInstance()->startBattle(enemy, _player);
 	tile->removeChild(enemy);
+	this->pause();
 	return;
 }
 

@@ -30,10 +30,10 @@ PlayerBullet* PlayerBullet::create(const std::string& filename)
 void PlayerBullet::hitEnemy() {
 	if (this->weapon == GRENADE && this->hit == 0){
 		if (explode != NULL) {
-			if (this->getBoundingBox().intersectsRect(this->enemy->getBoundingBox())) {
+			if (explode->getBoundingBox().intersectsRect(this->enemy->getBoundingBox())) {
 				enemy->hurt();
 			}
-			if (this->getBoundingBox().intersectsRect(this->enemy->getTarget()->getBoundingBox())) {
+			if (explode->getBoundingBox().intersectsRect(this->enemy->getTarget()->getBoundingBox())) {
 				enemy->getTarget()->hurt();
 			}
 			this->hit = 1;
@@ -42,10 +42,10 @@ void PlayerBullet::hitEnemy() {
 	}
 	else if (this->weapon == RADIATION) {
 		if (gas != NULL) {
-			if (this->getBoundingBox().intersectsRect(this->enemy->getBoundingBox())) {
+			if (gas->getBoundingBox().intersectsRect(this->enemy->getBoundingBox())) {
 				enemy->hurt();
 			}
-			if (this->getBoundingBox().intersectsRect(this->enemy->getTarget()->getBoundingBox())) {
+			if (gas->getBoundingBox().intersectsRect(this->enemy->getTarget()->getBoundingBox())) {
 				enemy->getTarget()->hurt();
 			}
 		}
@@ -66,12 +66,15 @@ void PlayerBullet::explosion(Ref *pSender) {
 	auto map = this->scene->getTileMap();
 	auto mat = this->scene->getMap();
 	auto location = this->scene->tileCoordForPosition(this->getPosition());
-	map->getLayer("Ground")->setTileGID(104, Point(location.x, location.y));
-	if (mat[(int)location.x][(int)location.y] != ESCAPE || mat[(int)location.x][(int)location.y] != START) {
-		mat[(int)location.x][(int)location.y] = BURN;
+	if (location.x > 0 && location.x < 7 && location.y > 0 && location.y < 7) {
+		map->getLayer("Ground")->setTileGID(104, Point(location.x, location.y));
+		if (mat[(int)location.x][(int)location.y] != ESCAPE || mat[(int)location.x][(int)location.y] != START) {
+			mat[(int)location.x][(int)location.y] = BURN;
+		}
 	}
 	this->runAction(FadeOut::create(0.1f));
 	explode->runAction(FadeOut::create(0.5f));
+	return;
 }
 
 //Method which described what happens when during a Radiation grenade explosion
@@ -80,9 +83,11 @@ void PlayerBullet::stun(Ref *pSender) {
 	auto map1 = this->scene->getTileMap();
 	auto mat1 = this->scene->getMap();
 	auto location = this->scene->tileCoordForPosition(this->getPosition());
-	map1->getLayer("Ground")->setTileGID(289, Point(location.x, location.y));
-	if (mat1[(int)location.x][(int)location.y] != ESCAPE || mat1[(int)location.x][(int)location.y] != START) {
-		mat1[(int)location.x][(int)location.y] = STUN;
+	if (location.x > 0 && location.x < 7 && location.y > 0 && location.y < 7) {
+		map1->getLayer("Ground")->setTileGID(289, Point(location.x, location.y));
+		if (mat1[(int)location.x][(int)location.y] != ESCAPE || mat1[(int)location.x][(int)location.y] != START) {
+			mat1[(int)location.x][(int)location.y] = STUN;
+		}
 	}
 	this->runAction(FadeOut::create(0.1f));
 	gas->runAction(FadeOut::create(1.5f));
@@ -94,9 +99,10 @@ void PlayerBullet::stun(Ref *pSender) {
 void PlayerBullet::setExplosionSprite(Ref *pSender) {
 	SoundManager::getInstance()->startGrenadeSound();
 	explode = Sprite::create("Explosion.png");
-	explode->setScale(this->getTargetEnemy()->getMapFight()->getLayer()->getTileAt(Vec2(0, 0))->getScale());
+	explode->setScale(this->getTargetEnemy()->getMapFight()->getLayer()->getTileAt(Vec2(3, 3))->getScale());
 	explode->setPosition(this->getPosition());
 	this->getParent()->addChild(explode);
+	return;
 }
 
 //Method which places the sprite of the Radiation granade's explosion
@@ -104,9 +110,10 @@ void PlayerBullet::setExplosionSprite(Ref *pSender) {
 void PlayerBullet::setRadiationSprite(Ref *pSender) {
 	SoundManager::getInstance()->startGasSound();
 	gas = Sprite::create("RadiationExplosion.png");
-	gas->setScale(this->getTargetEnemy()->getMapFight()->getLayer()->getTileAt(Vec2(0, 0))->getScale());
+	gas->setScale(this->getTargetEnemy()->getMapFight()->getLayer()->getTileAt(Vec2(3, 3))->getScale());
 	gas->setPosition(this->getPosition());
 	this->getParent()->addChild(gas);
+	return;
 }
 
 //Method which removes the sprite of the Granade's explosion
@@ -222,7 +229,7 @@ void PlayerBullet::update(float dt)
 				this->setState(MOVING);
 				auto offset = Point(enemy->getPosition() - this->getPosition());
 				offset.normalize();
-				auto shootAmount = offset * 150;
+				auto shootAmount = offset * 140;
 				auto realDest = shootAmount + this->getPosition();
 
 				auto callBack0 = CallFuncN::create(CC_CALLBACK_1(PlayerBullet::explosion, this));
@@ -247,7 +254,7 @@ void PlayerBullet::update(float dt)
 				this->setState(MOVING);
 				auto offset1 = Point(enemy->getPosition() - this->getPosition());
 				offset1.normalize();
-				auto shootAmount1 = offset1 * 170;
+				auto shootAmount1 = offset1 * 165;
 				auto realDest1 = shootAmount1 + this->getPosition();
 
 				auto callBack3 = CallFuncN::create(CC_CALLBACK_1(PlayerBullet::stun, this));

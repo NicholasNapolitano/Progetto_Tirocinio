@@ -118,9 +118,9 @@ void Enemy::update(float dt)
 			}
 		}
 	}
-	if (deltaTime >= 0.5f) {
+	if (deltaTime >= 0.5f && this->getState() != STUNNING) {
 		auto prevState = this->previousState;
-		if (previousState == MOVING || previousState == ATTACKING || previousState == DEFENDING || previousState == STUNNING) {
+		if (previousState == MOVING || previousState == ATTACKING || previousState == DEFENDING) {
 			this->setState(IDLE);
 			return;
 		}
@@ -138,6 +138,11 @@ void Enemy::update(float dt)
 				StrategyManager::getInstance()->scoutBehaviour(this);
 			}
 		}
+	}
+	else if (deltaTime >= 2.0f && this->getState() == STUNNING) {
+		this->setState(IDLE);
+		deltaTime = 0;
+		return;
 	}
 }
 
@@ -520,7 +525,7 @@ void Enemy::hurt() {
 		}
 		else {
 			this->setState(STUNNING);
-			this->runAction(DelayTime::create(0.5f));
+			this->runAction(DelayTime::create(2.0f));
 			return;
 		}
 	}
